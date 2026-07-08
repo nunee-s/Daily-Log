@@ -41,7 +41,7 @@ input,select,button,textarea{font-family:inherit}
       </button>
       <input type="file" accept="image/*" onChange="{{ onAvatarFile }}" id="sll-avatar-input" style="display:none">
       <div style="display:flex;flex-direction:column">
-        <span style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:21px;font-weight:700;letter-spacing:.2px;line-height:1.1;color:#5A4634">My Daily Log</span>
+        <span style="display:flex;align-items:baseline;gap:6px"><span style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:21px;font-weight:700;letter-spacing:.2px;line-height:1.1;color:#5A4634">My Daily Log</span><span title="App version" style="font-size:9.5px;font-weight:700;color:#B4AA9A;letter-spacing:.5px">v1.1.0</span></span>
         <span style="font-family:Caveat,cursive;font-size:16px;color:#7A6E56;line-height:1.2">{{ cheerLine }}</span>
       </div>
     </div>
@@ -73,8 +73,8 @@ input,select,button,textarea{font-family:inherit}
       </div>
     </div>
   </sc-if>
-  <div style="flex:1;display:flex;min-height:0;gap:14px;padding:0 18px 18px;padding-bottom:{{ mainPadBottom }}">
-    <main style="flex:1;min-width:0;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.36));backdrop-filter:blur(24px) saturate(1.5);border:1px solid rgba(255,255,255,.8);border-radius:24px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 32px rgba(110,95,75,.13);padding:14px;overflow:auto" data-screen-label="Calendar">
+  <div style="flex:1;display:flex;min-height:0;gap:14px;padding:0 {{ mainPadX }} 18px;padding-bottom:{{ mainPadBottom }}">
+    <main style="flex:1;min-width:0;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.36));backdrop-filter:blur(24px) saturate(1.5);border:1px solid rgba(255,255,255,.8);border-radius:24px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 32px rgba(110,95,75,.13);padding:{{ panelPad }};overflow:auto" data-screen-label="Calendar">
 
       <sc-if value="{{ isMonth }}" hint-placeholder-val="{{ true }}">
         <div data-screen-label="Month view" style="flex:1;display:flex;flex-direction:column;min-height:420px">
@@ -83,9 +83,9 @@ input,select,button,textarea{font-family:inherit}
               <div style="text-align:center;font-family:Caveat,cursive;font-size:15px;font-weight:600;color:#7C7365;text-transform:lowercase">{{ w }}</div>
             </sc-for>
           </div>
-          <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax(94px,1fr);gap:6px">
+          <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax({{ monthRowMin }},1fr);gap:{{ monthGap }}">
             <sc-for list="{{ monthCells }}" as="c" hint-placeholder-count="35">
-              <div data-date="{{ c.ds }}" onClick="{{ c.onClick }}" onDoubleClick="{{ c.onOpen }}" onDragOver="{{ c.onDragOver }}" onDragLeave="{{ c.onDragLeave }}" onDrop="{{ c.onDrop }}" style="border-radius:14px;padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0;background:{{ c.bg }};border:2px solid {{ c.border }};opacity:{{ c.opacity }};transition:background .15s,border-color .15s">
+              <div data-date="{{ c.ds }}" onClick="{{ c.onClick }}" onDoubleClick="{{ c.onOpen }}" onDragOver="{{ c.onDragOver }}" onDragLeave="{{ c.onDragLeave }}" onDrop="{{ c.onDrop }}" style="border-radius:12px;padding:{{ c.pad }};cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0;background:{{ c.bg }};border:2px solid {{ c.border }};opacity:{{ c.opacity }};transition:background .15s,border-color .15s">
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:2px">
                   <span style="font-size:12px;font-weight:700;color:{{ c.numColor }};background:{{ c.numBg }};border-radius:999px;min-width:21px;height:21px;display:inline-flex;align-items:center;justify-content:center">{{ c.dayNum }}</span>
                   <sc-if value="{{ c.hasNote }}" hint-placeholder-val="{{ false }}">
@@ -116,6 +116,33 @@ input,select,button,textarea{font-family:inherit}
       </sc-if>
 
       <sc-if value="{{ isWeek }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="Week view (mobile)" style="display:flex;flex-direction:column;gap:7px">
+            <sc-for list="{{ weekCols }}" as="d" hint-placeholder-count="7">
+              <div data-date="{{ d.ds }}" onClick="{{ d.onClick }}" onDragOver="{{ d.onDragOver }}" onDragLeave="{{ d.onDragLeave }}" onDrop="{{ d.onDrop }}" style="display:flex;gap:10px;align-items:flex-start;border-radius:14px;padding:8px;min-height:56px;background:{{ d.bg }};border:2px solid {{ d.border }};transition:background .15s,border-color .15s;cursor:pointer">
+                <div style="flex:none;width:42px;text-align:center">
+                  <div style="font-family:Caveat,cursive;font-size:13px;font-weight:600;color:#7C7365;text-transform:lowercase">{{ d.wname }}</div>
+                  <div style="margin-top:1px;font-family:'Baloo 2',Quicksand,sans-serif;font-size:15px;font-weight:700;color:{{ d.numColor }};background:{{ d.numBg }};border-radius:999px;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center">{{ d.dayNum }}</div>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start">
+                  <sc-for list="{{ d.entries }}" as="e" hint-placeholder-count="0">
+                    <button onClick="{{ e.onClick }}" style="border:none;cursor:pointer;display:flex;align-items:center;gap:5px;background:#FFFFFF;border-radius:999px;padding:4px 8px 4px 5px;box-shadow:0 1px 3px rgba(90,70,50,.1);animation:{{ e.anim }}">
+                      {{ e.imgSm }}
+                      <sc-if value="{{ e.noImg }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:17px;line-height:1;flex:none">{{ e.emoji }}</span>
+                      </sc-if>
+                      <span style="font-size:10.5px;font-weight:700;color:#5F564A;max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ e.name }}<!-- --></span>
+                      <sc-if value="{{ e.qtyLabel }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:9.5px;font-weight:700;color:#7A6E56;background:rgba(158,110,68,.14);border-radius:999px;padding:1px 5px;flex:none">{{ e.qtyLabel }}</span>
+                      </sc-if>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
         <div data-screen-label="Week view" style="flex:1;overflow-x:auto;min-height:420px">
           <div style="display:grid;grid-template-columns:repeat(7,minmax(102px,1fr));gap:8px;height:100%;min-height:400px">
             <sc-for list="{{ weekCols }}" as="d" hint-placeholder-count="7">
@@ -144,6 +171,7 @@ input,select,button,textarea{font-family:inherit}
             </sc-for>
           </div>
         </div>
+        </sc-if>
       </sc-if>
 
       <sc-if value="{{ isDay }}" hint-placeholder-val="{{ false }}">
@@ -765,8 +793,8 @@ class Component extends DCLogic {
     const byDate = {};
     this.state.entries.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
     const accent = this.accent();
-    const baseSize = this.stickerSize();
-    const max = 8;
+    const baseSize = this.state.isMobile ? Math.min(this.stickerSize(), 15) : this.stickerSize();
+    const max = this.state.isMobile ? 4 : 8;
     const cells = [];
     for (let i = 0; i < 42; i++) {
       const d = new Date(start); d.setDate(start.getDate() + i);
@@ -792,6 +820,7 @@ class Component extends DCLogic {
       const h = this.makeDropHandlers(ds);
       cells.push({
         ds: ds,
+        pad: this.state.isMobile ? '3px' : '6px',
         dayNum: d.getDate(),
         bg: isHover ? this.mix(24) : isSel ? this.mix(12) : inMonth ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.25)',
         border: isHover ? accent : isSel ? this.mix(45) : 'transparent',
@@ -1331,6 +1360,10 @@ class Component extends DCLogic {
       accent,
       isMobile: s.isMobile, isDesktop: !s.isMobile,
       mainPadBottom: s.isMobile ? '196px' : '18px',
+      mainPadX: s.isMobile ? '10px' : '18px',
+      panelPad: s.isMobile ? '9px' : '14px',
+      monthRowMin: s.isMobile ? '62px' : '94px',
+      monthGap: s.isMobile ? '3px' : '6px',
       headerLabel: this.buildHeaderLabel(),
       viewTabs: views.map(v => ({
         label: v[1],
