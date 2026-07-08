@@ -12,7 +12,7 @@ A playful, mobile-first visual life tracker: log food, drinks, exercise, and dai
 - **Meal lanes** — food/drinks auto-sort into Breakfast / Lunch / Snack / Dinner (editable)
 - **30+ default stickers** in 5 categories, all editable/hideable
 - **Custom sticker creator** — pick an emoji, upload an image, or use a text name-tag; optional **AI generate** from a description
-- **AI extras** — daily cheerful greeting, per-day nutrition & calorie estimate *(only in Claude-hosted environments — see Limitations)*
+- **Smart extras** — daily poem/greeting, per-day nutrition & calorie estimate, emoji lookup for the sticker creator — powered by Claude when hosted there, or by free public APIs when self-hosted (see below)
 - **Day notes** — freeform "note to self" per day (✏️ marker on the calendar)
 - **Sounds & delight** — pop/squish sound effects (mutable), drop animation, confetti at 3+ stickers/day
 - **Data safety** — CSV export (all or date range, includes day notes), full **JSON backup/restore**, automatic backup reminders
@@ -38,12 +38,26 @@ Any static host (Netlify, Vercel, S3) works the same way.
 | `ROADMAP.md` | Product roadmap |
 | `src/My Daily Log v2.dc.html` | Design-component source (edit in the original design environment, then re-bundle) |
 
+## 🌐 Smart features when self-hosted
+
+When the app detects it is NOT running in a Claude-hosted environment, it automatically switches to free public APIs:
+
+| Feature | Provider | Key needed? |
+|---|---|---|
+| ✨ Generate sticker (text → emoji + category) | [emoji.family](https://www.emoji.family/developers) (primary), [emoji-api.com](https://emoji-api.com) (optional fallback) | No key for emoji.family; emoji-api.com key optional |
+| 🥗 Nutrition estimate | [calorieapi.com](https://calorieapi.com) (preferred), falling back to [USDA FoodData Central](https://fdc.nal.usda.gov/api-guide) | Calorie API key ships pre-filled (replaceable in **Export → Online AI**); USDA works with `DEMO_KEY` |
+| ☀️ Daily greeting | [beanpoems.com](https://www.beanpoems.com/api/) — random poem of the day | No |
+
+Keys are entered in-app (Export dialog → "Online AI") and stored only in the user's browser. If a service is unreachable, the feature falls back gracefully (default greeting, friendly error).
+
+Note: USDA figures are per-100 g servings of the closest matching food — a rough estimate, not the Claude-grade contextual one.
+
 ## ⚠️ Limitations
 
 - **Storage is per-browser** (localStorage). No accounts, no sync. Users are nudged in-app to download JSON backups; restore works on any device.
-- **AI features degrade gracefully outside Claude-hosted environments**: sticker auto-generate and nutrition estimates show a friendly error; the daily greeting falls back to a default line. Everything else works fully offline.
 - Data cap: localStorage (~5 MB). Uploaded sticker images are downscaled to 96px, avatars to 128px, to stay small.
+- Nutrition/emoji APIs require internet; everything else works fully offline.
 
 ## 🔒 Privacy
 
-All data stays on the user's device. Nothing is sent anywhere except the optional AI calls (sticker text / day's food names only).
+All data stays on the user's device. The only network calls are the optional smart features, which send just the search text or the day's food names (never notes, dates tied to identity, or images).

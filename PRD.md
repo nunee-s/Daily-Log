@@ -59,10 +59,10 @@ A visual daily journal where users **place cute stickers on a calendar** to reco
 - JSON backup (full state incl. custom stickers, notes, avatar) + restore with confirmation
 - Backup nudge: shown at ≥10 entries and ≥14 days since last backup; snooze 7 days
 
-### 5.6 AI features (P1 — Claude-hosted environments only, graceful fallback elsewhere)
-- Daily greeting line (cached per day)
-- Sticker auto-generation from text
-- Per-day nutrition estimate (kcal, protein, carbs, fat + summary), cached per day-signature
+### 5.6 Smart features (P1 — dual-provider)
+- Provider A (Claude-hosted): daily greeting, sticker generation, contextual nutrition estimate via in-environment AI
+- Provider B (self-hosted fallback, auto-detected): emoji-api.com for sticker generation (user-supplied free key), USDA FoodData Central for nutrition (DEMO_KEY default), beanpoems.com random poem for daily greeting (no key)
+- All providers fail gracefully to manual flows; results cached per day / per day-signature
 
 ### 5.7 Personalization (P1)
 - Avatar logo (photo upload, 128px, stored locally; 👤 default)
