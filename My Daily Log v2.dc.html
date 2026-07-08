@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&amp;family=Quicksand:wght@500;600;700&amp;family=Caveat:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#F3F1EC}
+*{box-sizing:border-box}
+a{color:#9E6E44;text-decoration:none}
+a:hover{color:#7E5432}
+input,select,button,textarea{font-family:inherit}
+@keyframes sll-pop{0%{transform:scale(.1) rotate(-22deg);opacity:0}55%{transform:scale(1.35) rotate(9deg)}78%{transform:scale(.9) rotate(-4deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes sll-conf{0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.35) rotate(var(--dr));opacity:0}}
+@keyframes sll-fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+::-webkit-scrollbar{height:8px;width:8px}
+::-webkit-scrollbar-thumb{background:#E5D9C6;border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+</style>
+</helmet>
+<div style="min-height:100dvh;display:flex;flex-direction:column;background:radial-gradient(circle at 15% 8%,rgba(228,200,172,.5) 0%,transparent 45%),radial-gradient(circle at 90% 32%,rgba(150,190,185,.35) 0%,transparent 50%),radial-gradient(circle at 45% 98%,rgba(214,196,180,.4) 0%,transparent 55%),#F5F3EF;background-attachment:fixed;font-family:Quicksand,system-ui,sans-serif;color:#413C36">
+
+  <header style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:14px 18px 10px">
+    <div style="display:flex;align-items:center;gap:11px;margin-right:4px">
+      <button onClick="{{ onAvatarClick }}" title="Set your photo as the logo" style="position:relative;border:none;cursor:pointer;width:46px;height:46px;border-radius:50%;background:linear-gradient(180deg,#E7DFD3,#D2C5B2);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 3px 8px rgba(110,95,75,.25);display:flex;align-items:center;justify-content:center;font-size:24px;padding:0;flex:none">
+        <sc-if value="{{ avatar }}" hint-placeholder-val="{{ false }}">
+          {{ avatarNode }}
+        </sc-if>
+        <sc-if value="{{ noAvatar }}" hint-placeholder-val="{{ true }}">
+          <span>👤</span>
+        </sc-if>
+        <span style="position:absolute;right:-3px;bottom:-3px;width:17px;height:17px;background:rgba(255,255,255,.95);border-radius:50%;box-shadow:0 1px 3px rgba(110,95,75,.3);display:flex;align-items:center;justify-content:center;font-size:9px">📷</span>
+      </button>
+      <input type="file" accept="image/*" onChange="{{ onAvatarFile }}" id="sll-avatar-input" style="display:none">
+      <div style="display:flex;flex-direction:column">
+        <span style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:21px;font-weight:700;letter-spacing:.2px;line-height:1.1;color:#5A4634">My Daily Log</span>
+        <span style="font-family:Caveat,cursive;font-size:16px;color:#7A6E56;line-height:1.2">{{ cheerLine }}</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:3px;background:linear-gradient(180deg,rgba(255,255,255,.72),rgba(255,255,255,.45));backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 4px 14px rgba(110,95,75,.12)">
+      <sc-for list="{{ viewTabs }}" as="t" hint-placeholder-count="3">
+        <button onClick="{{ t.onClick }}" style="border:none;cursor:pointer;padding:7px 15px;border-radius:999px;font-weight:700;font-size:13px;background:{{ t.bg }};color:{{ t.color }};transition:background .15s">{{ t.label }}</button>
+      </sc-for>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <button onClick="{{ onPrev }}" aria-label="Previous" style="border:none;cursor:pointer;width:32px;height:32px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,.55));backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 3px 10px rgba(110,95,75,.12);font-size:15px;font-weight:700;color:#675E52">‹</button>
+      <div style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:17px;font-weight:700;min-width:140px;text-align:center">{{ headerLabel }}</div>
+      <button onClick="{{ onNext }}" aria-label="Next" style="border:none;cursor:pointer;width:32px;height:32px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,.55));backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 3px 10px rgba(110,95,75,.12);font-size:15px;font-weight:700;color:#675E52">›</button>
+      <button onClick="{{ onToday }}" style="border:1px solid rgba(210,190,160,.55);cursor:pointer;padding:5px 12px;border-radius:999px;background:#FFFFFF;font-weight:700;font-size:12px;color:#675E52">Today</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+      <button onClick="{{ toggleMute }}" title="Sound on/off" style="border:1px solid rgba(210,190,160,.55);cursor:pointer;width:35px;height:35px;border-radius:999px;background:#FFFFFF;font-size:14px;display:flex;align-items:center;justify-content:center">{{ muteIcon }}</button>
+      <button onClick="{{ openExport }}" style="border:1px solid rgba(210,190,160,.55);cursor:pointer;padding:7px 13px;border-radius:999px;background:#FFFFFF;font-weight:700;font-size:12.5px;color:#675E52">⤓ Export CSV</button>
+      <button onClick="{{ openCreatorNew }}" style="border:none;cursor:pointer;padding:9px 15px;border-radius:999px;background:{{ accent }};font-weight:700;font-size:12.5px;color:#FFFFFF;box-shadow:0 2px 8px rgba(200,110,80,.3)">＋ Create Sticker</button>
+    </div>
+  </header>
+
+  <sc-if value="{{ backupNudge }}" hint-placeholder-val="{{ false }}">
+    <div style="margin:0 18px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(255,251,240,.85),rgba(255,248,232,.65));backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(255,255,255,.9);border-radius:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 20px rgba(110,95,75,.14);padding:10px 14px">
+      <span style="font-size:18px;line-height:1">💾</span>
+      <span style="flex:1;min-width:180px;font-size:12.5px;font-weight:700;color:#675E52">{{ backupNudgeText }}</span>
+      <div style="display:flex;gap:6px">
+        <button onClick="{{ onNudgeBackup }}" style="border:none;cursor:pointer;padding:8px 14px;border-radius:999px;background:{{ accent }};color:#FFFFFF;font-weight:700;font-size:12px">Back up now</button>
+        <button onClick="{{ onNudgeLater }}" style="border:1px solid rgba(210,190,160,.55);cursor:pointer;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.65);color:#675E52;font-weight:700;font-size:12px">Later</button>
+      </div>
+    </div>
+  </sc-if>
+  <div style="flex:1;display:flex;min-height:0;gap:14px;padding:0 18px 18px;padding-bottom:{{ mainPadBottom }}">
+    <main style="flex:1;min-width:0;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.36));backdrop-filter:blur(24px) saturate(1.5);border:1px solid rgba(255,255,255,.8);border-radius:24px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 32px rgba(110,95,75,.13);padding:14px;overflow:auto" data-screen-label="Calendar">
+
+      <sc-if value="{{ isMonth }}" hint-placeholder-val="{{ true }}">
+        <div data-screen-label="Month view" style="flex:1;display:flex;flex-direction:column;min-height:420px">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px">
+            <sc-for list="{{ weekdayNames }}" as="w" hint-placeholder-count="7">
+              <div style="text-align:center;font-family:Caveat,cursive;font-size:15px;font-weight:600;color:#7C7365;text-transform:lowercase">{{ w }}</div>
+            </sc-for>
+          </div>
+          <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax(94px,1fr);gap:6px">
+            <sc-for list="{{ monthCells }}" as="c" hint-placeholder-count="35">
+              <div data-date="{{ c.ds }}" onClick="{{ c.onClick }}" onDoubleClick="{{ c.onOpen }}" onDragOver="{{ c.onDragOver }}" onDragLeave="{{ c.onDragLeave }}" onDrop="{{ c.onDrop }}" style="border-radius:14px;padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0;background:{{ c.bg }};border:2px solid {{ c.border }};opacity:{{ c.opacity }};transition:background .15s,border-color .15s">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:2px">
+                  <span style="font-size:12px;font-weight:700;color:{{ c.numColor }};background:{{ c.numBg }};border-radius:999px;min-width:21px;height:21px;display:inline-flex;align-items:center;justify-content:center">{{ c.dayNum }}</span>
+                  <sc-if value="{{ c.hasNote }}" hint-placeholder-val="{{ false }}">
+                    <span title="This day has a note" style="font-size:10px;line-height:1">✏️</span>
+                  </sc-if>
+                  <sc-if value="{{ c.overflow }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:10px;font-weight:700;color:#A08F76;background:rgba(158,110,68,.14);border-radius:999px;padding:2px 6px">+{{ c.overflow }}</span>
+                  </sc-if>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;overflow:hidden;align-content:flex-start;padding-left:4px">
+                  <sc-for list="{{ c.stickers }}" as="s" hint-placeholder-count="0">
+                    <sc-if value="{{ s.img }}" hint-placeholder-val="{{ false }}">
+                      {{ s.imgNode }}
+                    </sc-if>
+                    <sc-if value="{{ s.noImg }}" hint-placeholder-val="{{ false }}">
+                      <span title="{{ s.name }} — right-click to remove" onContextMenu="{{ s.onRemove }}" style="display:inline-flex;align-items:center;justify-content:center;width:{{ s.box }}px;height:{{ s.box }}px;background:#FFFFFF;border-radius:50%;box-shadow:0 1px 3px rgba(95,80,60,.3);font-size:{{ s.size }}px;line-height:1;transform:rotate({{ s.rot }}deg);margin:0 0 -3px {{ s.ml }}px;animation:{{ s.anim }}">{{ s.emoji }}</span>
+                    </sc-if>
+                    <sc-if value="{{ s.tag }}" hint-placeholder-val="{{ false }}">
+                      <span title="{{ s.name }}" style="display:inline-block;font-size:9px;font-weight:700;color:#5F564A;background:{{ s.tagBg }};border-radius:6px;padding:2px 5px;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transform:rotate({{ s.rot }}deg);margin:0 0 -2px {{ s.ml }}px;animation:{{ s.anim }}">{{ s.name }}</span>
+                    </sc-if>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:8px;font-family:Caveat,cursive;font-size:16px;color:#7C7365;text-align:center">← drag a sticker onto a day · click to peek · double-click to open →</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isWeek }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Week view" style="flex:1;overflow-x:auto;min-height:420px">
+          <div style="display:grid;grid-template-columns:repeat(7,minmax(102px,1fr));gap:8px;height:100%;min-height:400px">
+            <sc-for list="{{ weekCols }}" as="d" hint-placeholder-count="7">
+              <div data-date="{{ d.ds }}" onClick="{{ d.onClick }}" onDragOver="{{ d.onDragOver }}" onDragLeave="{{ d.onDragLeave }}" onDrop="{{ d.onDrop }}" style="border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:8px;background:{{ d.bg }};border:2px solid {{ d.border }};transition:background .15s,border-color .15s;cursor:pointer">
+                <div style="text-align:center">
+                  <div style="font-family:Caveat,cursive;font-size:14px;font-weight:600;color:#7C7365;text-transform:lowercase">{{ d.wname }}</div>
+                  <div style="margin-top:2px;font-family:'Baloo 2',Quicksand,sans-serif;font-size:16px;font-weight:700;color:{{ d.numColor }};background:{{ d.numBg }};border-radius:999px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center">{{ d.dayNum }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <sc-for list="{{ d.entries }}" as="e" hint-placeholder-count="0">
+                    <button onClick="{{ e.onClick }}" style="border:none;cursor:pointer;display:flex;align-items:center;gap:7px;background:#FFFFFF;border-radius:10px;padding:5px 7px;box-shadow:0 1px 3px rgba(90,70,50,.1);text-align:left;animation:{{ e.anim }}">
+                      <sc-if value="{{ e.img }}" hint-placeholder-val="{{ false }}">
+                        {{ e.imgSm }}
+                      </sc-if>
+                      <sc-if value="{{ e.noImg }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:19px;line-height:1;flex:none">{{ e.emoji }}</span>
+                      </sc-if>
+                      <span style="font-size:11px;font-weight:700;color:#5F564A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ e.name }}</span>
+                      <sc-if value="{{ e.qtyLabel }}" hint-placeholder-val="{{ false }}">
+                        <span style="margin-left:auto;font-size:10px;font-weight:700;color:#A08F76;background:rgba(158,110,68,.14);border-radius:999px;padding:1px 5px;flex:none">{{ e.qtyLabel }}</span>
+                      </sc-if>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isDay }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Day view" data-date="{{ dayDs }}" onDragOver="{{ dayDragOver }}" onDragLeave="{{ dayDragLeave }}" onDrop="{{ dayDrop }}" style="flex:1;display:flex;flex-direction:column;gap:14px;border-radius:14px;border:2px dashed {{ dayBorder }};padding:14px;min-height:420px;transition:border-color .15s">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <button onClick="{{ onBackToCal }}" style="border:none;cursor:pointer;display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:rgba(158,110,68,.14);font-weight:700;font-size:12.5px;color:#675E52">← {{ backLabel }}</button>
+            <div style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:24px;font-weight:700">{{ dayTitle }}</div>
+            <div style="font-size:12.5px;font-weight:700;color:#7C7365">{{ dayCountLabel }}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <span style="font-family:Caveat,cursive;font-size:16px;font-weight:600;color:#7C7365">note to self ✏️</span>
+            <textarea value="{{ dayNote }}" onChange="{{ onDayNote }}" placeholder="How was this day?" maxLength="500" style="width:100%;box-sizing:border-box;max-width:520px;height:58px;border:1px solid rgba(210,190,160,.55);border-radius:12px;padding:8px 10px;font-family:Quicksand,sans-serif;font-size:12.5px;font-weight:600;color:#413C36;background:rgba(255,255,255,.6);outline:none;resize:vertical"></textarea>
+          </div>
+          <sc-if value="{{ dayHasFood }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:9px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.85);border-radius:14px;padding:12px 14px">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span style="font-size:13px;font-weight:700;color:#675E52">🥗 Nutrition · AI estimate</span>
+                <button onClick="{{ onCalcNutrition }}" disabled="{{ nutriLoading }}" style="margin-left:auto;border:none;cursor:pointer;padding:6px 12px;border-radius:999px;background:{{ nutriBtnBg }};color:#FFFFFF;font-weight:700;font-size:11.5px">{{ nutriBtnLabel }}</button>
+              </div>
+              <sc-if value="{{ nutriError }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:11.5px;font-weight:700;color:#C05138">{{ nutriError }}</div>
+              </sc-if>
+              <sc-if value="{{ nutri }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <sc-for list="{{ nutriStats }}" as="n" hint-placeholder-count="4">
+                    <div style="background:#FFFFFF;border-radius:12px;padding:8px 12px;box-shadow:0 1px 3px rgba(90,70,50,.08);min-width:74px">
+                      <div style="font-size:10px;font-weight:700;color:#7C7365;text-transform:uppercase;letter-spacing:.5px">{{ n.label }}</div>
+                      <div style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:17px;font-weight:700;color:#413C36">{{ n.value }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="font-size:12px;font-weight:600;color:#675E52;line-height:1.5">{{ nutriSummary }}</div>
+              </sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ dayEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#C4B499">
+              <div style="font-size:40px">🫙</div>
+              <div style="font-size:14px;font-weight:700">Nothing logged yet</div>
+              <div style="font-size:12px">Drag a sticker here, or tap one in the palette</div>
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;gap:16px">
+          <sc-for list="{{ dayLanes }}" as="lane" hint-placeholder-count="0">
+            <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:12px;font-weight:700;color:#7C7365;letter-spacing:.6px;text-transform:uppercase">{{ lane.emoji }} {{ lane.label }}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start">
+            <sc-for list="{{ lane.entries }}" as="e" hint-placeholder-count="0">
+              <button onClick="{{ e.onClick }}" style="border:none;cursor:pointer;width:104px;display:flex;flex-direction:column;align-items:center;gap:5px;background:{{ e.bg }};border-radius:16px;padding:12px 8px 10px;box-shadow:0 2px 6px rgba(90,70,50,.09);animation:{{ e.anim }}">
+                <sc-if value="{{ e.img }}" hint-placeholder-val="{{ false }}">
+                  {{ e.imgBig }}
+                </sc-if>
+                <sc-if value="{{ e.noImg }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:36px;line-height:1">{{ e.emoji }}</span>
+                </sc-if>
+                <sc-if value="{{ e.tag }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:13px;font-weight:700;color:#5F564A;background:rgba(255,255,255,.8);border-radius:8px;padding:10px 8px;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ e.name }}</span>
+                </sc-if>
+                <span style="font-size:12px;font-weight:700;color:#5F564A;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ e.name }}<!-- --></span>
+                <sc-if value="{{ e.metaLabel }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size:10.5px;font-weight:700;color:#A08F76;background:rgba(255,255,255,.7);border-radius:999px;padding:2px 7px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ e.metaLabel }}</span>
+                </sc-if>
+              </button>
+            </sc-for>
+            </div>
+            </div>
+          </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </main>
+
+    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+      <aside data-screen-label="Sticker palette" style="width:278px;flex:none;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.36));backdrop-filter:blur(24px) saturate(1.5);border:1px solid rgba(255,255,255,.8);border-radius:24px;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 32px rgba(110,95,75,.13);overflow:hidden">
+        <div style="padding:12px 12px 4px;font-family:'Baloo 2',Quicksand,sans-serif;font-size:15px;font-weight:700">Sticker palette</div>
+        <div style="padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap">
+          <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="5">
+            <button onClick="{{ cat.onClick }}" style="border:none;cursor:pointer;border-radius:999px;padding:6px 10px;font-family:Caveat,cursive;font-size:15.5px;font-weight:600;background:{{ cat.bg }};color:{{ cat.color }};transition:background .15s">{{ cat.emoji }} {{ cat.label }}</button>
+          </sc-for>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:6px 12px 12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-content:start">
+          <sc-for list="{{ palette }}" as="s" hint-placeholder-count="9">
+            <div draggable="{{ true }}" onDragStart="{{ s.onDragStart }}" onClick="{{ s.onClick }}" onPointerDown="{{ s.onPointerDown }}" title="Drag onto a day, or click to add" style="position:relative;background:{{ s.bg }};border-radius:14px;padding:11px 5px 8px;text-align:center;cursor:grab;user-select:none;display:flex;flex-direction:column;align-items:center;gap:5px;transition:transform .18s" style-hover="transform:rotate(-5deg) scale(1.1)" style-active="transform:scale(.92)">
+              <sc-if value="{{ s.img }}" hint-placeholder-val="{{ false }}">
+                {{ s.imgNode }}
+              </sc-if>
+              <sc-if value="{{ s.noImg }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:27px;line-height:1;pointer-events:none">{{ s.emoji }}</span>
+              </sc-if>
+              <sc-if value="{{ s.tag }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:11px;font-weight:700;color:#5F564A;background:rgba(255,255,255,.8);border-radius:7px;padding:7px 6px;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none">{{ s.name }}</span>
+              </sc-if>
+              <span style="font-family:Caveat,cursive;font-size:14px;font-weight:600;color:#5F564A;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none">{{ s.name }}<!-- --></span>
+              <button onClick="{{ s.onEdit }}" title="Edit or remove sticker" style="position:absolute;top:3px;right:3px;border:none;cursor:pointer;width:20px;height:20px;border-radius:999px;background:rgba(255,255,255,.85);font-size:10px;color:#675E52;display:flex;align-items:center;justify-content:center">✎</button>
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding:10px 12px;border-top:1px solid rgba(158,110,68,.14);display:flex;flex-direction:column;gap:6px">
+          <div style="font-family:Caveat,cursive;font-size:16px;font-weight:600;color:#7C7365;text-align:center">click a sticker to add it to <span style="color:{{ accent }}">{{ selectedShort }}</span></div>
+        </div>
+      </aside>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Sticker drawer" style="position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.55));backdrop-filter:blur(28px) saturate(1.6);border-top:1px solid rgba(255,255,255,.9);border-radius:26px 26px 0 0;box-shadow:0 -6px 28px rgba(110,95,75,.18);padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:40;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="font-size:12px;font-weight:700;color:#675E52">Adding to <span style="color:{{ accent }}">{{ selectedShort }}</span></div>
+        <button onClick="{{ openSelectedDay }}" style="border:none;cursor:pointer;font-size:11px;font-weight:700;color:#675E52;background:rgba(158,110,68,.14);border-radius:999px;padding:4px 10px">Open day ↗</button>
+        <button onClick="{{ openCreatorNew }}" style="margin-left:auto;border:none;cursor:pointer;font-size:11px;font-weight:700;color:#FFFFFF;background:{{ accent }};border-radius:999px;padding:5px 11px">＋ Create</button>
+      </div>
+      <div style="display:flex;gap:5px;overflow-x:auto;padding-bottom:2px">
+        <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="5">
+          <button onClick="{{ cat.onClick }}" style="flex:none;border:none;cursor:pointer;border-radius:999px;padding:6px 11px;font-family:Caveat,cursive;font-size:15.5px;font-weight:600;background:{{ cat.bg }};color:{{ cat.color }}">{{ cat.emoji }} {{ cat.label }}</button>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px">
+        <sc-for list="{{ palette }}" as="s" hint-placeholder-count="8">
+          <button onClick="{{ s.onClick }}" onPointerDown="{{ s.onPointerDown }}" style="flex:none;border:none;cursor:pointer;width:68px;background:{{ s.bg }};border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;transition:transform .15s" style-active="transform:scale(.86) rotate(-4deg)">
+            <sc-if value="{{ s.img }}" hint-placeholder-val="{{ false }}">
+              {{ s.imgNodeSm }}
+            </sc-if>
+            <sc-if value="{{ s.noImg }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:25px;line-height:1">{{ s.emoji }}</span>
+            </sc-if>
+            <sc-if value="{{ s.tag }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:10px;font-weight:700;color:#5F564A;background:rgba(255,255,255,.8);border-radius:7px;padding:6px 5px;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.name }}</span>
+            </sc-if>
+            <span style="font-family:Caveat,cursive;font-size:13.5px;font-weight:600;color:#5F564A;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ s.name }}<!-- --></span>
+            <span onClick="{{ s.onEdit }}" style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:999px;background:rgba(255,255,255,.85);font-size:9px;color:#675E52;display:flex;align-items:center;justify-content:center">✎</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ touchDrag }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:{{ tdX }}px;top:{{ tdY }}px;z-index:90;pointer-events:none;transform:translate(-50%,-70%) scale(1.15) rotate(-5deg)">
+      <sc-if value="{{ tdImg }}" hint-placeholder-val="{{ false }}">
+        {{ tdImgNode }}
+      </sc-if>
+      <sc-if value="{{ tdEmoji }}" hint-placeholder-val="{{ false }}">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;background:#FFFFFF;border-radius:50%;box-shadow:0 10px 24px rgba(60,50,40,.35);font-size:30px">{{ tdEmoji }}</span>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ peek }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePeek }}" style="position:fixed;inset:0;background:rgba(74,64,56,.30);z-index:55;display:flex;align-items:center;justify-content:center;padding:18px">
+      <div onClick="{{ eatClick }}" data-screen-label="Day peek" style="background:rgba(252,250,246,.9);backdrop-filter:blur(24px) saturate(1.4);border:1px solid rgba(255,255,255,.9);border-radius:24px;padding:16px;width:340px;max-width:100%;animation:sll-fade .18s ease;display:flex;flex-direction:column;gap:11px;max-height:70dvh">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:17px;font-weight:700">{{ peek.title }}</div>
+          <span style="font-size:11.5px;font-weight:700;color:#7C7365">{{ peek.countLabel }}</span>
+          <button onClick="{{ closePeek }}" style="margin-left:auto;border:none;cursor:pointer;width:26px;height:26px;border-radius:999px;background:rgba(158,110,68,.14);font-size:11px;font-weight:700;color:#675E52">✕</button>
+        </div>
+        <sc-if value="{{ peek.empty }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;font-weight:700;color:#C4B499;text-align:center;padding:14px 0">Nothing here yet — add stickers from the palette 🎒</div>
+        </sc-if>
+        <div style="overflow-y:auto;display:flex;flex-wrap:wrap;gap:7px">
+          <sc-for list="{{ peek.entries }}" as="e" hint-placeholder-count="0">
+            <button onClick="{{ e.onClick }}" style="border:none;cursor:pointer;display:flex;align-items:center;gap:6px;background:{{ e.bg }};border-radius:999px;padding:6px 10px 6px 7px;animation:{{ e.anim }}">
+              <sc-if value="{{ e.img }}" hint-placeholder-val="{{ false }}">
+                {{ e.imgSm }}
+              </sc-if>
+              <sc-if value="{{ e.noImg }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:19px;line-height:1;flex:none">{{ e.emoji }}</span>
+              </sc-if>
+              <span style="font-size:11.5px;font-weight:700;color:#5F564A;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ e.name }}<!-- --></span>
+              <sc-if value="{{ e.qtyLabel }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:10px;font-weight:700;color:#A08F76;background:rgba(255,255,255,.75);border-radius:999px;padding:1px 5px;flex:none">{{ e.qtyLabel }}</span>
+              </sc-if>
+              <span onClick="{{ e.onRemove }}" title="Remove" style="width:18px;height:18px;border-radius:999px;background:rgba(255,255,255,.85);font-size:9px;font-weight:700;color:#C05138;display:flex;align-items:center;justify-content:center;flex:none">✕</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span style="font-family:Caveat,cursive;font-size:16px;font-weight:600;color:#7C7365">note to self ✏️</span>
+          <textarea value="{{ peek.note }}" onChange="{{ peek.onNote }}" placeholder="How was this day?" maxLength="500" style="width:100%;box-sizing:border-box;height:64px;border:1px solid rgba(210,190,160,.55);border-radius:12px;padding:8px 10px;font-family:Quicksand,sans-serif;font-size:12.5px;font-weight:600;color:#413C36;background:rgba(255,255,255,.6);outline:none;resize:vertical"></textarea>
+        </div>
+        <button onClick="{{ peek.onOpenDay }}" style="border:none;cursor:pointer;padding:10px;border-radius:999px;background:{{ accent }};color:#FFFFFF;font-weight:700;font-size:13px">Open day ↗</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ detail }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeDetail }}" style="position:fixed;inset:0;background:rgba(74,64,56,.38);z-index:60;display:flex;align-items:center;justify-content:center;padding:20px">
+      <div onClick="{{ eatClick }}" data-screen-label="Sticker details" style="background:rgba(252,250,246,.9);backdrop-filter:blur(24px) saturate(1.4);border:1px solid rgba(255,255,255,.9);border-radius:24px;padding:20px;width:330px;max-width:100%;animation:sll-fade .2s ease;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:56px;height:56px;border-radius:16px;background:{{ detail.bg }};display:flex;align-items:center;justify-content:center;flex:none">
+            <sc-if value="{{ detail.img }}" hint-placeholder-val="{{ false }}">
+              {{ detail.imgNode }}
+            </sc-if>
+            <sc-if value="{{ detail.noImg }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:32px;line-height:1">{{ detail.emoji }}</span>
+            </sc-if>
+            <sc-if value="{{ detail.tag }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:12px;font-weight:700;color:#5F564A;background:rgba(255,255,255,.8);border-radius:7px;padding:6px 6px;line-height:1.2;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ detail.name }}</span>
+            </sc-if>
+          </div>
+          <div style="min-width:0">
+            <div style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:18px;font-weight:700">{{ detail.name }}</div>
+            <div style="font-size:12px;font-weight:700;color:#7C7365">{{ detail.dateLabel }} · {{ detail.catLabel }}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12.5px;font-weight:700;color:#675E52;width:64px">Quantity</span>
+          <button onClick="{{ detail.onMinus }}" style="border:none;cursor:pointer;width:30px;height:30px;border-radius:999px;background:rgba(158,110,68,.14);font-size:16px;font-weight:700;color:#675E52">−</button>
+          <span style="font-size:15px;font-weight:700;min-width:34px;text-align:center">×{{ detail.qty }}</span>
+          <button onClick="{{ detail.onPlus }}" style="border:none;cursor:pointer;width:30px;height:30px;border-radius:999px;background:rgba(158,110,68,.14);font-size:16px;font-weight:700;color:#675E52">＋</button>
+        </div>
+        <sc-if value="{{ detail.hasSlot }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+            <span style="font-size:12.5px;font-weight:700;color:#675E52;width:64px;flex:none">Meal</span>
+            <sc-for list="{{ detail.slots }}" as="sl" hint-placeholder-count="4">
+              <button onClick="{{ sl.onClick }}" style="border:none;cursor:pointer;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:700;background:{{ sl.bg }};color:{{ sl.color }}">{{ sl.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12.5px;font-weight:700;color:#675E52;width:64px;flex:none">Note</span>
+          <input value="{{ detail.note }}" onChange="{{ detail.onNote }}" placeholder="Optional short note…" maxLength="80" style="flex:1;min-width:0;border:1px solid rgba(210,190,160,.55);border-radius:12px;padding:8px 10px;font-size:13px;font-weight:600;color:#413C36;outline:none;background:rgba(255,255,255,.6)">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onClick="{{ detail.onDelete }}" style="border:none;cursor:pointer;flex:1;padding:10px;border-radius:999px;background:#FBE3DC;color:#C05138;font-weight:700;font-size:13px">Delete</button>
+          <button onClick="{{ closeDetail }}" style="border:none;cursor:pointer;flex:1;padding:10px;border-radius:999px;background:{{ accent }};color:#FFFFFF;font-weight:700;font-size:13px">Done</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ creatorOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeCreator }}" style="position:fixed;inset:0;background:rgba(74,64,56,.38);z-index:60;display:flex;align-items:center;justify-content:center;padding:20px">
+      <div onClick="{{ eatClick }}" data-screen-label="Sticker creator" style="background:rgba(252,250,246,.9);backdrop-filter:blur(24px) saturate(1.4);border:1px solid rgba(255,255,255,.9);border-radius:24px;padding:20px;width:360px;max-width:100%;animation:sll-fade .2s ease;display:flex;flex-direction:column;gap:13px;max-height:88dvh;overflow-y:auto">
+        <div style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:19px;font-weight:700">{{ creatorTitle }}</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:62px;height:62px;border-radius:18px;background:rgba(255,255,255,.6);border:2px dashed #EADFCB;display:flex;align-items:center;justify-content:center;flex:none">
+            <sc-if value="{{ creatorPrevImg }}" hint-placeholder-val="{{ false }}">
+              {{ creatorPrevImgNode }}
+            </sc-if>
+            <sc-if value="{{ creatorPrevEmoji }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:34px;line-height:1">{{ creatorPrevEmoji }}</span>
+            </sc-if>
+            <sc-if value="{{ creatorPrevTag }}" hint-placeholder-val="{{ false }}">
+              <span style="font-size:11px;font-weight:700;color:#5F564A;background:rgba(158,110,68,.14);border-radius:7px;padding:6px 6px;line-height:1.2;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ creatorPrevTag }}</span>
+            </sc-if>
+          </div>
+          <div style="font-size:11.5px;font-weight:600;color:#7C7365;line-height:1.5">Pick an emoji <b>or</b> upload an image. Neither? The name becomes a little tag sticker.</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input value="{{ cEmoji }}" onChange="{{ onCEmoji }}" placeholder="😀 emoji" style="width:92px;border:1px solid rgba(210,190,160,.55);border-radius:12px;padding:8px 10px;font-size:17px;text-align:center;outline:none;background:rgba(255,255,255,.6)">
+          <span style="font-size:11px;font-weight:700;color:#7C7365">or</span>
+          <label style="flex:1;border:1px solid rgba(210,190,160,.55);border-radius:12px;padding:9px 10px;font-size:12px;font-weight:700;color:#675E52;text-align:center;cursor:pointer;background:rgba(255,255,255,.6)">
+            📷 Upload image
+            <input type="file" accept="image/*" onChange="{{ onCFile }}" style="display:none">
+          </label>
+        </div>
+        <sc-if value="{{ cImg }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onClearImg }}" style="border:none;cursor:pointer;align-self:flex-start;font-size:11px;font-weight:700;color:#C05138;background:#FBE3DC;border-radius:999px;padding:4px 10px">✕ Remove image</button>
+        </sc-if>
+        <div style="display:flex;gap:8px">
+          <input value="{{ cName }}" onChange="{{ onCName }}" onKeyDown="{{ onCNameKey }}" placeholder="Sticker name (e.g. Matcha latte)" maxLength="40" style="flex:1;min-width:0;border:1px solid rgba(210,190,160,.55);border-radius:12px;padding:9px 11px;font-size:13.5px;font-weight:600;color:#413C36;outline:none;background:rgba(255,255,255,.6)">
+          <button onClick="{{ onGenerate }}" disabled="{{ genDisabled }}" title="Let AI pick the emoji &amp; category from the name" style="border:none;cursor:pointer;flex:none;padding:9px 13px;border-radius:12px;background:{{ genBg }};color:#FFFFFF;font-weight:700;font-size:12.5px">{{ genLabel }}</button>
+        </div>
+        <sc-if value="{{ genError }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:11.5px;font-weight:700;color:#C05138">{{ genError }}</div>
+        </sc-if>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <sc-for list="{{ creatorCats }}" as="cat" hint-placeholder-count="5">
+            <button onClick="{{ cat.onClick }}" style="border:none;cursor:pointer;border-radius:999px;padding:6px 10px;font-family:Caveat,cursive;font-size:15.5px;font-weight:600;background:{{ cat.bg }};color:{{ cat.color }}">{{ cat.emoji }} {{ cat.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:8px">
+          <sc-if value="{{ creatorEditId }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ onDeleteCustom }}" style="border:none;cursor:pointer;padding:10px 14px;border-radius:999px;background:#FBE3DC;color:#C05138;font-weight:700;font-size:13px">{{ creatorDeleteLabel }}</button>
+          </sc-if>
+          <button onClick="{{ closeCreator }}" style="border:1px solid rgba(210,190,160,.55);cursor:pointer;flex:1;padding:9px;border-radius:999px;background:#FFFFFF;color:#675E52;font-weight:700;font-size:13px">Cancel</button>
+          <button onClick="{{ onSaveCreator }}" style="border:none;cursor:pointer;flex:1;padding:10px;border-radius:999px;background:{{ accent }};color:#FFFFFF;font-weight:700;font-size:13px">{{ creatorSaveLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ exportOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeExport }}" style="position:fixed;inset:0;background:rgba(74,64,56,.38);z-index:60;display:flex;align-items:center;justify-content:center;padding:20px">
+      <div onClick="{{ eatClick }}" data-screen-label="Export CSV" style="background:rgba(252,250,246,.9);backdrop-filter:blur(24px) saturate(1.4);border:1px solid rgba(255,255,255,.9);border-radius:24px;padding:20px;width:340px;max-width:100%;animation:sll-fade .2s ease;display:flex;flex-direction:column;gap:13px">
+        <div style="font-family:'Baloo 2',Quicksand,sans-serif;font-size:19px;font-weight:700">Export CSV</div>
+        <div style="display:flex;gap:6px">
+          <button onClick="{{ onExAll }}" style="border:none;cursor:pointer;flex:1;padding:9px;border-radius:999px;font-weight:700;font-size:12.5px;background:{{ exAllBg }};color:{{ exAllColor }}">All data</button>
+          <button onClick="{{ onExRange }}" style="border:none;cursor:pointer;flex:1;padding:9px;border-radius:999px;font-weight:700;font-size:12.5px;background:{{ exRangeBg }};color:{{ exRangeColor }}">Date range</button>
+        </div>
+        <sc-if value="{{ exIsRange }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="date" value="{{ exFrom }}" onChange="{{ onExFrom }}" style="flex:1;min-width:0;border:1px solid rgba(210,190,160,.55);border-radius:12px;padding:7px 8px;font-size:12.5px;font-weight:600;color:#413C36;outline:none;background:rgba(255,255,255,.6)">
+            <span style="font-size:12px;font-weight:700;color:#7C7365">→</span>
+            <input type="date" value="{{ exTo }}" onChange="{{ onExTo }}" style="flex:1;min-width:0;border:1px solid rgba(210,190,160,.55);border-radius:12px;padding:7px 8px;font-size:12.5px;font-weight:600;color:#413C36;outline:none;background:rgba(255,255,255,.6)">
+          </div>
+        </sc-if>
+        <div style="font-size:12px;font-weight:700;color:#7C7365">{{ exportCountLabel }}</div>
+        <sc-if value="{{ exCsv }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <div style="font-size:11.5px;font-weight:700;color:#675E52">{{ exDownloadNote }}</div>
+            <textarea readOnly value="{{ exCsv }}" style="width:100%;box-sizing:border-box;height:110px;border:1px solid rgba(210,190,160,.55);border-radius:12px;padding:8px 10px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#413C36;background:rgba(255,255,255,.6);resize:vertical"></textarea>
+            <button onClick="{{ onCopyCsv }}" style="border:none;cursor:pointer;align-self:flex-start;padding:8px 14px;border-radius:999px;background:rgba(158,110,68,.14);color:#7E5432;font-weight:700;font-size:12px">{{ exCopyLabel }}</button>
+          </div>
+        </sc-if>
+        <div style="border-top:1px solid rgba(210,190,160,.45);padding-top:11px;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:12px;font-weight:700;color:#675E52">Backup &amp; restore — all data as one file</div>
+          <div style="display:flex;gap:8px">
+            <button onClick="{{ onBackup }}" style="border:none;cursor:pointer;flex:1;padding:9px;border-radius:999px;background:rgba(158,110,68,.14);color:#7E5432;font-weight:700;font-size:12px">⤓ Backup (.json)</button>
+            <label style="flex:1;border:1px solid rgba(210,190,160,.55);cursor:pointer;padding:8px;border-radius:999px;background:rgba(255,255,255,.65);color:#675E52;font-weight:700;font-size:12px;text-align:center">⤒ Restore
+              <input type="file" accept="application/json,.json" onChange="{{ onRestoreFile }}" style="display:none">
+            </label>
+          </div>
+          <sc-if value="{{ restoreMsg }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:11.5px;font-weight:700;color:#5F8F6E">{{ restoreMsg }}</div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ showApiKeys }}" hint-placeholder-val="{{ false }}">
+          <div style="border-top:1px solid rgba(210,190,160,.45);padding-top:11px;display:flex;flex-direction:column;gap:7px">
+            <div style="font-size:12px;font-weight:700;color:#675E52">Online AI — free API keys</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;font-weight:700;color:#675E52;width:88px;flex:none">emoji-api.com</span>
+              <input value="{{ emojiKey }}" onChange="{{ onEmojiKey }}" placeholder="optional — emoji.family used first, no key needed" style="flex:1;min-width:0;border:1px solid rgba(210,190,160,.55);border-radius:10px;padding:7px 9px;font-size:11.5px;font-weight:600;color:#413C36;background:rgba(255,255,255,.6);outline:none">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;font-weight:700;color:#675E52;width:88px;flex:none">calorieapi.com</span>
+              <input value="{{ calorieKey }}" onChange="{{ onCalorieKey }}" placeholder="API key (preferred for nutrition)" style="flex:1;min-width:0;border:1px solid rgba(210,190,160,.55);border-radius:10px;padding:7px 9px;font-size:11.5px;font-weight:600;color:#413C36;background:rgba(255,255,255,.6);outline:none">
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;font-weight:700;color:#675E52;width:88px;flex:none">USDA FDC</span>
+              <input value="{{ usdaKey }}" onChange="{{ onUsdaKey }}" placeholder="DEMO_KEY (works out of the box)" style="flex:1;min-width:0;border:1px solid rgba(210,190,160,.55);border-radius:10px;padding:7px 9px;font-size:11.5px;font-weight:600;color:#413C36;background:rgba(255,255,255,.6);outline:none">
+            </div>
+            <div style="font-size:10.5px;font-weight:600;color:#675E52;line-height:1.5">Sticker generate uses emoji.family (no key) with emoji-api.com as fallback · nutrition uses calorieapi.com, falling back to USDA FoodData Central · daily poem from beanpoems.com (no key). Keys are stored only in this browser.</div>
+          </div>
+        </sc-if>
+        <div style="display:flex;gap:8px">
+          <button onClick="{{ closeExport }}" style="border:1px solid rgba(210,190,160,.55);cursor:pointer;flex:1;padding:9px;border-radius:999px;background:#FFFFFF;color:#675E52;font-weight:700;font-size:13px">Cancel</button>
+          <button onClick="{{ onDoExport }}" style="border:none;cursor:pointer;flex:1;padding:10px;border-radius:999px;background:{{ accent }};color:#FFFFFF;font-weight:700;font-size:13px">⤓ Download</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<template id="__bundler_thumbnail" data-bg-color="#F5F3EF">
+  <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <rect x="30" y="34" width="60" height="56" rx="12" fill="#FFFFFF" stroke="#D2C5B2" stroke-width="2"/>
+    <rect x="30" y="34" width="60" height="16" rx="8" fill="#A9794F"/>
+    <circle cx="48" cy="66" r="7" fill="#F3C878"/>
+    <circle cx="66" cy="66" r="7" fill="#8CAF97"/>
+    <circle cx="57" cy="80" r="7" fill="#E8836B"/>
+  </svg>
+</template>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accent&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#A9794F&quot;, &quot;options&quot;: [&quot;#A9794F&quot;, &quot;#4E7E77&quot;, &quot;#6F87A0&quot;, &quot;#E8836B&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Theme&quot; },
+  &quot;weekStart&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;Monday&quot;, &quot;options&quot;: [&quot;Sunday&quot;, &quot;Monday&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Calendar&quot; },
+  &quot;stickerSize&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 17, &quot;min&quot;: 14, &quot;max&quot;: 28, &quot;step&quot;: 1, &quot;unit&quot;: &quot;px&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Calendar&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    view: 'month',
+    cursor: this.fmt(new Date()),
+    selectedDate: this.fmt(new Date()),
+    activeCat: 'food',
+    entries: [],
+    custom: [],
+    detailId: null,
+    creatorOpen: false, creatorEditId: null, cName: '', cEmoji: '', cImg: null, cCat: 'food',
+    genLoading: false, genError: '',
+    nutriLoading: false, nutriKey: '', nutriData: null, nutriError: '',
+    exportOpen: false, exMode: 'all', exFrom: '', exTo: '', exCsv: '', exDownloaded: false, exCopied: false,
+    hoverDate: null, justAdded: null,
+    isMobile: false,
+    overrides: {}, hiddenDefaults: [], dayNotes: {},
+    peekDate: null, muted: false, touchDrag: null, restoreMsg: '',
+    lastBackup: '', nudgeSnooze: '', firstUse: '',
+    avatar: null, cheer: ''
+  };
+
+  fmt(d) { const p = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+  parse(s) { const a = s.split('-').map(Number); return new Date(a[0], a[1] - 1, a[2]); }
+  accent() { return this.props.accent ?? '#A9794F'; }
+  mix(pct, base) { return 'color-mix(in oklab, ' + this.accent() + ' ' + pct + '%, ' + (base || 'white') + ')'; }
+  stickerSize() { return Number(this.props.stickerSize ?? 18); }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('sll-data-v1');
+      if (raw) { const d = JSON.parse(raw); this.setState({ entries: d.entries || [], custom: d.custom || [], overrides: d.overrides || {}, hiddenDefaults: d.hiddenDefaults || [], avatar: d.avatar || null, dayNotes: d.dayNotes || {} }); }
+    } catch (e) { }
+    try { this.setState({ muted: localStorage.getItem('sll-muted') === '1' }); } catch (e) { }
+    this._mq = window.matchMedia('(max-width: 760px)');
+    this._mqFn = () => this.setState({ isMobile: this._mq.matches });
+    this._mq.addEventListener('change', this._mqFn);
+    this._mqFn();
+    this.loadCheer();
+    try {
+      let firstUse = localStorage.getItem('sll-first-use');
+      if (!firstUse) { firstUse = this.fmt(new Date()); localStorage.setItem('sll-first-use', firstUse); }
+      this.setState({
+        firstUse,
+        lastBackup: localStorage.getItem('sll-last-backup') || '',
+        nudgeSnooze: localStorage.getItem('sll-nudge-snooze') || ''
+      });
+    } catch (e) { }
+  }
+  daysSince(ds) {
+    if (!ds) return 9999;
+    const ms = new Date() - this.parse(ds);
+    return Math.floor(ms / 86400000);
+  }
+
+  async loadCheer() {
+    const today = this.fmt(new Date());
+    try {
+      const c = JSON.parse(localStorage.getItem('sll-cheer') || 'null');
+      if (c && c.date === today && c.text) { this.setState({ cheer: c.text }); return; }
+    } catch (e) { }
+    if (!this.hasClaude()) {
+      const pool = [
+        'small steps, sticker by sticker \u2600\ufe0f', 'today deserves a good sticker', 'you showed up \u2014 that counts \u2b50',
+        'one little log, one good day', 'collect the tiny wins \ud83c\udf31', 'your week is looking sticker-worthy',
+        'a fresh page, all yours \u270f\ufe0f', 'log it, then go live it', 'little moments add up \ud83e\udde9',
+        'be kind to future-you \u2014 log today', 'every day gets a sticker chance', 'nice to see you again \ud83d\udc4b',
+        'make it a three-sticker day \ud83c\udf89', 'the pile grows, so do you \ud83c\udf3f'
+      ];
+      const doy = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+      this.setState({ cheer: pool[doy % pool.length] });
+      try {
+        const r = await fetch('https://www.beanpoems.com/api/random');
+        const p = await r.json();
+        const firstLine = (p.body || '').split('\n')[0].trim();
+        const text = ((p.title ? p.title + ' \u2014 ' : '') + firstLine).slice(0, 80);
+        if (text.trim()) {
+          this.setState({ cheer: text });
+          try { localStorage.setItem('sll-cheer', JSON.stringify({ date: today, text })); } catch (e) { }
+        }
+      } catch (e) { }
+      return;
+    }
+    try {
+      const raw = await window.claude.complete({
+        system: 'Write ONE short, cheerful, gender-neutral line or micro-poem (max 60 characters) to greet someone opening their daily life-log journal. Warm, playful, never cheesy-romantic. Plain text only, no quotes, at most one emoji.',
+        messages: [{ role: 'user', content: 'Today is ' + new Date().toDateString() + '. Write today\'s line.' }]
+      });
+      const text = raw.trim().split('\n')[0].slice(0, 70);
+      if (text) {
+        this.setState({ cheer: text });
+        try { localStorage.setItem('sll-cheer', JSON.stringify({ date: today, text })); } catch (e) { }
+      }
+    } catch (e) { }
+  }
+
+  onAvatarFile(e) {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const S = 128, c = document.createElement('canvas');
+        c.width = S; c.height = S;
+        const ctx = c.getContext('2d');
+        const m = Math.min(img.width, img.height);
+        ctx.drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, S, S);
+        this.setState({ avatar: c.toDataURL('image/jpeg', 0.85) }, () => this.persist());
+      };
+      img.src = r.result;
+    };
+    r.readAsDataURL(f);
+  }
+  componentWillUnmount() { if (this._mq) this._mq.removeEventListener('change', this._mqFn); }
+  persist() { try { localStorage.setItem('sll-data-v1', JSON.stringify({ entries: this.state.entries, custom: this.state.custom, overrides: this.state.overrides, hiddenDefaults: this.state.hiddenDefaults, avatar: this.state.avatar, dayNotes: this.state.dayNotes })); } catch (e) { } }
+
+  catDefs() {
+    return [
+      { id: 'food', label: 'Food', emoji: '🍙', color: '#A6761A', bg: '#FFE8C2' },
+      { id: 'drinks', label: 'Drinks', emoji: '🧋', color: '#2A7A99', bg: '#CFEAF5' },
+      { id: 'exercise', label: 'Exercise', emoji: '🏃', color: '#3E7F3A', bg: '#D6EFCB' },
+      { id: 'health', label: 'Health', emoji: '💊', color: '#B04A77', bg: '#FBD9E6' },
+      { id: 'other', label: 'Other', emoji: '⭐', color: '#6A5AAE', bg: '#E4DCF7' }
+    ];
+  }
+  defaults() {
+    return [
+      ['rice', 'Rice', '🍚', 'food'], ['curry', 'Curry', '🍛', 'food'], ['ramen', 'Ramen', '🍜', 'food'], ['sushi', 'Sushi', '🍣', 'food'], ['bread', 'Bread', '🍞', 'food'], ['salad', 'Salad', '🥗', 'food'], ['icecream', 'Ice cream', '🍦', 'food'], ['cake', 'Cake', '🍰', 'food'], ['snacks', 'Snacks', '🍿', 'food'],
+      ['water', 'Water', '💧', 'drinks'], ['milktea', 'Milk tea', '🧋', 'drinks'], ['coffee', 'Coffee', '☕', 'drinks'], ['juice', 'Juice', '🧃', 'drinks'], ['beer', 'Beer', '🍺', 'drinks'],
+      ['walking', 'Walking', '🚶', 'exercise'], ['running', 'Running', '🏃', 'exercise'], ['gym', 'Gym', '🏋️', 'exercise'], ['yoga', 'Yoga', '🧘', 'exercise'], ['cycling', 'Cycling', '🚴', 'exercise'], ['swimming', 'Swimming', '🏊', 'exercise'],
+      ['poop', 'Poop', '💩', 'health'], ['sleep', 'Sleep', '😴', 'health'], ['medicine', 'Medicine', '💊', 'health'], ['period', 'Period', '🩸', 'health'], ['sick', 'Sick', '🤒', 'health'],
+      ['study', 'Study', '📚', 'other'], ['work', 'Work', '💼', 'other'], ['happy', 'Happy', '😊', 'other'], ['neutral', 'Okay', '😐', 'other'], ['sad', 'Sad', '😢', 'other']
+    ].map(a => ({ id: a[0], name: a[1], emoji: a[2], cat: a[3] }));
+  }
+  allStickers() { return this.defaults().map(s => Object.assign({}, s, this.state.overrides[s.id] || {})).concat(this.state.custom); }
+  isCustomId(id) { return this.state.custom.some(x => x.id === id); }
+  getSticker(id) { return this.allStickers().find(s => s.id === id) || { id: id, name: 'Deleted sticker', emoji: '❓', cat: 'other' }; }
+  catBg(cat) { const c = this.catDefs().find(x => x.id === cat); return c ? c.bg : '#F3EADA'; }
+  catLabel(cat) { const c = this.catDefs().find(x => x.id === cat); return c ? c.label : 'Other'; }
+
+  addEntry(date, stickerId, x, y) {
+    const id = 'e' + Date.now() + Math.random().toString(36).slice(2, 6);
+    const cat = this.getSticker(stickerId).cat;
+    const slot = (cat === 'food' || cat === 'drinks') ? this.guessSlot() : undefined;
+    const prevCount = this.entriesFor(date).length;
+    const entries = this.state.entries.concat([{ id, date, stickerId, qty: 1, note: '', slot }]);
+    this.setState({ entries, justAdded: id, hoverDate: null, selectedDate: date }, () => this.persist());
+    clearTimeout(this._jt);
+    this._jt = setTimeout(() => this.setState({ justAdded: null }), 700);
+    this.playPop();
+    if (prevCount + 1 === 3) { this.playTada(); this.burst(x, y); }
+  }
+
+  slotDefs() {
+    return [
+      { id: 'breakfast', label: 'Breakfast', emoji: '🍳' },
+      { id: 'lunch', label: 'Lunch', emoji: '🍱' },
+      { id: 'snack', label: 'Snack', emoji: '🍪' },
+      { id: 'dinner', label: 'Dinner', emoji: '🍲' }
+    ];
+  }
+  guessSlot() {
+    const d = new Date(), h = d.getHours() + d.getMinutes() / 60;
+    return h < 10.5 ? 'breakfast' : h < 14.5 ? 'lunch' : h < 17.5 ? 'snack' : 'dinner';
+  }
+
+  ac() {
+    try {
+      if (!this._ac) this._ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (this._ac.state === 'suspended') this._ac.resume();
+      return this._ac;
+    } catch (e) { return null; }
+  }
+  tone(f0, f1, dur, type, gain, when) {
+    const ac = this.ac(); if (!ac) return;
+    const t = ac.currentTime + (when || 0);
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(f0, t);
+    o.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t + dur);
+    g.gain.setValueAtTime(gain || 0.15, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(ac.destination);
+    o.start(t); o.stop(t + dur + 0.03);
+  }
+  playPop() { if (this.state.muted) return; const f = 500 + Math.random() * 200; this.tone(f, f * 2.2, 0.12, 'sine', 0.18); this.tone(f * 0.5, f * 0.95, 0.09, 'triangle', 0.07); }
+  playSquish() { if (this.state.muted) return; this.tone(320, 75, 0.22, 'triangle', 0.16); }
+  playTada() { if (this.state.muted) return; [523, 659, 784, 1047].forEach((f, i) => this.tone(f, f * 1.01, 0.2, 'sine', 0.11, i * 0.09)); }
+  burst(x, y) {
+    x = x || window.innerWidth / 2; y = y || window.innerHeight / 2;
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y + 'px;z-index:99;pointer-events:none';
+    const glyphs = ['✨', '🎉', '⭐', '💛', '🌸'];
+    for (let i = 0; i < 12; i++) {
+      const p = document.createElement('span');
+      const a = Math.PI * 2 * i / 12 + Math.random() * 0.5;
+      const d = 46 + Math.random() * 48;
+      p.textContent = glyphs[i % glyphs.length];
+      p.style.cssText = 'position:absolute;left:0;top:0;font-size:' + (12 + Math.random() * 9) + 'px;animation:sll-conf .8s ease-out forwards';
+      p.style.setProperty('--dx', Math.cos(a) * d + 'px');
+      p.style.setProperty('--dy', (Math.sin(a) * d - 34) + 'px');
+      p.style.setProperty('--dr', (Math.random() * 170 - 85) + 'deg');
+      wrap.appendChild(p);
+    }
+    document.body.appendChild(wrap);
+    setTimeout(() => wrap.remove(), 900);
+  }
+  updEntry(id, patch) {
+    const entries = this.state.entries.map(e => e.id === id ? Object.assign({}, e, patch) : e);
+    this.setState({ entries }, () => this.persist());
+  }
+  delEntry(id) {
+    const entries = this.state.entries.filter(e => e.id !== id);
+    this.setState({ entries, detailId: null }, () => this.persist());
+    this.playSquish();
+  }
+  entriesFor(date) { return this.state.entries.filter(e => e.date === date); }
+
+  nav(dir) {
+    const d = this.parse(this.state.cursor);
+    const v = this.state.view;
+    if (v === 'month') d.setMonth(d.getMonth() + dir);
+    else if (v === 'week') d.setDate(d.getDate() + 7 * dir);
+    else d.setDate(d.getDate() + dir);
+    const s = this.fmt(d);
+    const st = { cursor: s };
+    if (v === 'day') st.selectedDate = s;
+    this.setState(st);
+  }
+  weekStartIdx() { return this.props.weekStart === 'Monday' ? 1 : 0; }
+  weekStartOf(dateStr) {
+    const d = this.parse(dateStr);
+    d.setDate(d.getDate() - ((d.getDay() - this.weekStartIdx() + 7) % 7));
+    return d;
+  }
+  dragId(e) { let id = this._dragId; if (!id) { try { id = e.dataTransfer.getData('text/plain'); } catch (_) { } } return id; }
+
+  monthNames() { return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; }
+  wdNames() { const b = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; const i = this.weekStartIdx(); return b.slice(i).concat(b.slice(0, i)); }
+  shortLabel(dateStr) {
+    const d = this.parse(dateStr);
+    return this.monthNames()[d.getMonth()].slice(0, 3) + ' ' + d.getDate();
+  }
+
+  makeDropHandlers(ds) {
+    return {
+      onDragOver: (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; if (this.state.hoverDate !== ds) this.setState({ hoverDate: ds }); },
+      onDragLeave: () => { if (this.state.hoverDate === ds) this.setState({ hoverDate: null }); },
+      onDrop: (e) => { e.preventDefault(); const id = this.dragId(e); if (id) this.addEntry(ds, id, e.clientX, e.clientY); this._dragId = null; }
+    };
+  }
+
+  buildMonthCells() {
+    const cur = this.parse(this.state.cursor);
+    const first = new Date(cur.getFullYear(), cur.getMonth(), 1);
+    const start = new Date(first);
+    start.setDate(1 - ((first.getDay() - this.weekStartIdx() + 7) % 7));
+    const today = this.fmt(new Date());
+    const byDate = {};
+    this.state.entries.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+    const accent = this.accent();
+    const baseSize = this.stickerSize();
+    const max = 8;
+    const cells = [];
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(start); d.setDate(start.getDate() + i);
+      const ds = this.fmt(d);
+      const inMonth = d.getMonth() === cur.getMonth();
+      const isToday = ds === today, isSel = ds === this.state.selectedDate, isHover = ds === this.state.hoverDate;
+      const list = byDate[ds] || [];
+      const scale = list.length <= 4 ? 1 : list.length <= 6 ? 0.85 : 0.72;
+      const size = Math.max(11, Math.round(baseSize * scale));
+      const shown = list.slice(0, max).map((e, ix) => {
+        const st = this.getSticker(e.stickerId);
+        const rot = ((ix * 47) % 15) - 7;
+        const ml = ix === 0 ? 0 : -Math.round((size + 9) * 0.3);
+        const anim = e.id === this.state.justAdded ? 'sll-pop .5s ease' : 'none';
+        return {
+          emoji: st.emoji || '', img: st.img || '', noImg: !st.img && !!st.emoji, tag: !st.img && !st.emoji,
+          tagBg: this.catBg(st.cat), name: st.name, size: size,
+          rot: rot, box: size + 9, ml: ml, anim: anim,
+          imgNode: this.imgEl(st.img, { width: size + 3, height: size + 3, borderRadius: 5, objectFit: 'cover', transform: 'rotate(' + rot + 'deg)', margin: '0 0 -2px ' + ml + 'px', animation: anim }),
+          onRemove: (ev) => { ev.preventDefault(); ev.stopPropagation(); this.delEntry(e.id); }
+        };
+      });
+      const h = this.makeDropHandlers(ds);
+      cells.push({
+        ds: ds,
+        dayNum: d.getDate(),
+        bg: isHover ? this.mix(24) : isSel ? this.mix(12) : inMonth ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.25)',
+        border: isHover ? accent : isSel ? this.mix(45) : 'transparent',
+        opacity: inMonth ? 1 : 0.45,
+        numBg: isToday ? accent : 'transparent',
+        numColor: isToday ? '#FFFFFF' : '#675E52',
+        stickers: shown,
+        hasNote: !!this.state.dayNotes[ds],
+        overflow: list.length > max ? (list.length - max) : 0,
+        onClick: () => this.setState({ selectedDate: ds, peekDate: ds }),
+        onOpen: () => this.openDay(ds),
+        onDragOver: h.onDragOver, onDragLeave: h.onDragLeave, onDrop: h.onDrop
+      });
+    }
+    return cells;
+  }
+
+  entryChip(e) {
+    const st = this.getSticker(e.stickerId);
+    return {
+      emoji: st.emoji || '', img: st.img || '', noImg: !st.img && !!st.emoji, tag: !st.img && !st.emoji, name: st.name,
+      imgSm: this.imgEl(st.img, { width: 22, height: 22, borderRadius: 6, objectFit: 'cover', flex: 'none' }),
+      imgBig: this.imgEl(st.img, { width: 42, height: 42, borderRadius: 10, objectFit: 'cover' }),
+      qtyLabel: (e.qty || 1) > 1 ? '×' + e.qty : '',
+      metaLabel: ((e.qty || 1) > 1 ? '×' + e.qty + ' ' : '') + (e.note || ''),
+      bg: this.catBg(st.cat),
+      anim: e.id === this.state.justAdded ? 'sll-pop .5s ease' : 'none',
+      onClick: (ev) => { ev.stopPropagation(); this.setState({ detailId: e.id }); },
+      onRemove: (ev) => { ev.preventDefault(); ev.stopPropagation(); this.delEntry(e.id); }
+    };
+  }
+
+  buildWeekCols() {
+    const start = this.weekStartOf(this.state.cursor);
+    const today = this.fmt(new Date());
+    const accent = this.accent();
+    const names = this.wdNames();
+    const cols = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start); d.setDate(start.getDate() + i);
+      const ds = this.fmt(d);
+      const isToday = ds === today, isSel = ds === this.state.selectedDate, isHover = ds === this.state.hoverDate;
+      const h = this.makeDropHandlers(ds);
+      cols.push({
+        ds: ds,
+        wname: names[i], dayNum: d.getDate(),
+        bg: isHover ? this.mix(24) : isSel ? this.mix(10) : 'rgba(255,255,255,.55)',
+        border: isHover ? accent : isSel ? this.mix(45) : 'transparent',
+        numBg: isToday ? accent : 'transparent',
+        numColor: isToday ? '#FFFFFF' : '#5F564A',
+        entries: this.entriesFor(ds).map(e => this.entryChip(e)),
+        onClick: () => this.setState({ selectedDate: ds }),
+        onDragOver: h.onDragOver, onDragLeave: h.onDragLeave, onDrop: h.onDrop
+      });
+    }
+    return cols;
+  }
+
+  buildHeaderLabel() {
+    const cur = this.parse(this.state.cursor);
+    const M = this.monthNames();
+    const v = this.state.view;
+    if (v === 'month') return M[cur.getMonth()] + ' ' + cur.getFullYear();
+    if (v === 'week') {
+      const s = this.weekStartOf(this.state.cursor);
+      const e = new Date(s); e.setDate(s.getDate() + 6);
+      return M[s.getMonth()].slice(0, 3) + ' ' + s.getDate() + ' – ' + M[e.getMonth()].slice(0, 3) + ' ' + e.getDate();
+    }
+    return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][cur.getDay()] + ', ' + M[cur.getMonth()].slice(0, 3) + ' ' + cur.getDate();
+  }
+
+  exportRows() {
+    const { exMode, exFrom, exTo } = this.state;
+    let rows = this.state.entries.slice();
+    if (exMode === 'range') {
+      if (exFrom) rows = rows.filter(e => e.date >= exFrom);
+      if (exTo) rows = rows.filter(e => e.date <= exTo);
+    }
+    rows.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+    return rows;
+  }
+  doExport() {
+    const rows = this.exportRows();
+    const esc = v => { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    const lines = ['date,category,sticker_name,quantity,note'];
+    rows.forEach(e => {
+      const s = this.getSticker(e.stickerId);
+      lines.push([e.date, s.cat, s.name, e.qty || 1, e.note || ''].map(esc).join(','));
+    });
+    const { exMode, exFrom, exTo } = this.state;
+    let noteDates = Object.keys(this.state.dayNotes).filter(d => this.state.dayNotes[d]);
+    if (exMode === 'range') {
+      if (exFrom) noteDates = noteDates.filter(d => d >= exFrom);
+      if (exTo) noteDates = noteDates.filter(d => d <= exTo);
+    }
+    noteDates.sort();
+    noteDates.forEach(d => lines.push([d, 'day_note', 'Day note', 1, this.state.dayNotes[d]].map(esc).join(',')));
+    const csv = lines.join('\n');
+    let ok = false;
+    try {
+      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'my-daily-log.csv';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      ok = true;
+    } catch (e) { }
+    this.setState({ exCsv: csv, exDownloaded: ok });
+  }
+  copyCsv() {
+    const done = () => { this.setState({ exCopied: true }); clearTimeout(this._ct); this._ct = setTimeout(() => this.setState({ exCopied: false }), 1500); };
+    try { navigator.clipboard.writeText(this.state.exCsv).then(done, () => { }); } catch (e) {
+      try {
+        const t = document.createElement('textarea');
+        t.value = this.state.exCsv;
+        document.body.appendChild(t); t.select();
+        document.execCommand('copy'); t.remove(); done();
+      } catch (_) { }
+    }
+  }
+
+  openCreator(editId) {
+    if (editId) {
+      const s = this.allStickers().find(x => x.id === editId);
+      if (!s) return;
+      this.setState({ creatorOpen: true, creatorEditId: editId, cName: s.name, cEmoji: s.img ? '' : s.emoji, cImg: s.img || null, cCat: s.cat });
+    } else {
+      this.setState({ creatorOpen: true, creatorEditId: null, cName: '', cEmoji: '', cImg: null, cCat: this.state.activeCat });
+    }
+  }
+  saveCreator() {
+    const { cName, cEmoji, cImg, cCat, creatorEditId } = this.state;
+    const emoji = cEmoji.trim();
+    if (!cImg && !emoji && !cName.trim()) return;
+    const name = cName.trim() || (emoji ? emoji : 'My sticker');
+    const patch = { name, emoji: cImg ? '' : emoji, img: cImg || undefined, cat: cCat };
+    if (creatorEditId && !this.isCustomId(creatorEditId)) {
+      const overrides = Object.assign({}, this.state.overrides);
+      overrides[creatorEditId] = patch;
+      this.setState({ overrides, creatorOpen: false, activeCat: cCat }, () => this.persist());
+      return;
+    }
+    let custom;
+    if (creatorEditId) {
+      custom = this.state.custom.map(s => s.id === creatorEditId ? Object.assign({}, s, patch) : s);
+    } else {
+      custom = this.state.custom.concat([Object.assign({ id: 'c' + Date.now(), isCustom: true }, patch)]);
+    }
+    this.setState({ custom, creatorOpen: false, activeCat: cCat }, () => this.persist());
+  }
+  deleteCustom() {
+    const id = this.state.creatorEditId;
+    if (!this.isCustomId(id)) {
+      this.setState({ hiddenDefaults: this.state.hiddenDefaults.concat([id]), creatorOpen: false }, () => this.persist());
+      return;
+    }
+    const custom = this.state.custom.filter(s => s.id !== id);
+    const entries = this.state.entries.filter(e => e.stickerId !== id);
+    this.setState({ custom, entries, creatorOpen: false }, () => this.persist());
+  }
+  emojiIndex() {
+    return [
+      ['milk', '🥛', 'drinks'], ['water', '💧', 'drinks'], ['coffee', '☕', 'drinks'], ['tea', '🍵', 'drinks'], ['green tea', '🍵', 'drinks'], ['milk tea', '🧋', 'drinks'], ['boba', '🧋', 'drinks'], ['bubble tea', '🧋', 'drinks'], ['juice', '🧃', 'drinks'], ['soda', '🥤', 'drinks'], ['cola', '🥤', 'drinks'], ['beer', '🍺', 'drinks'], ['wine', '🍷', 'drinks'], ['sake', '🍶', 'drinks'], ['cocktail', '🍸', 'drinks'], ['whiskey', '🥃', 'drinks'], ['champagne', '🍾', 'drinks'], ['smoothie', '🥤', 'drinks'],
+      ['rice', '🍚', 'food'], ['curry', '🍛', 'food'], ['ramen', '🍜', 'food'], ['noodle', '🍜', 'food'], ['sushi', '🍣', 'food'], ['bread', '🍞', 'food'], ['salad', '🥗', 'food'], ['pizza', '🍕', 'food'], ['burger', '🍔', 'food'], ['fries', '🍟', 'food'], ['hot dog', '🌭', 'food'], ['sandwich', '🥪', 'food'], ['taco', '🌮', 'food'], ['burrito', '🌯', 'food'], ['egg', '🍳', 'food'], ['bacon', '🥓', 'food'], ['pancake', '🥞', 'food'], ['waffle', '🧇', 'food'], ['cheese', '🧀', 'food'], ['meat', '🍖', 'food'], ['steak', '🥩', 'food'], ['chicken', '🍗', 'food'], ['pork', '🥓', 'food'], ['beef', '🥩', 'food'], ['fish', '🐟', 'food'], ['shrimp', '🍤', 'food'], ['tempura', '🍤', 'food'], ['bento', '🍱', 'food'], ['onigiri', '🍙', 'food'], ['rice ball', '🍙', 'food'], ['soup', '🍲', 'food'], ['stew', '🍲', 'food'], ['pasta', '🍝', 'food'], ['spaghetti', '🍝', 'food'], ['croissant', '🥐', 'food'], ['bagel', '🥯', 'food'], ['donut', '🍩', 'food'], ['doughnut', '🍩', 'food'], ['cookie', '🍪', 'food'], ['cake', '🍰', 'food'], ['chocolate', '🍫', 'food'], ['candy', '🍬', 'food'], ['ice cream', '🍦', 'food'], ['popcorn', '🍿', 'food'], ['chips', '🍟', 'food'], ['snack', '🍿', 'food'], ['dumpling', '🥟', 'food'], ['gyoza', '🥟', 'food'], ['apple', '🍎', 'food'], ['banana', '🍌', 'food'], ['orange', '🍊', 'food'], ['grape', '🍇', 'food'], ['strawberry', '🍓', 'food'], ['watermelon', '🍉', 'food'], ['peach', '🍑', 'food'], ['cherry', '🍒', 'food'], ['pineapple', '🍍', 'food'], ['mango', '🥭', 'food'], ['kiwi', '🥝', 'food'], ['lemon', '🍋', 'food'], ['avocado', '🥑', 'food'], ['tomato', '🍅', 'food'], ['corn', '🌽', 'food'], ['carrot', '🥕', 'food'], ['potato', '🥔', 'food'], ['sweet potato', '🍠', 'food'], ['broccoli', '🥦', 'food'], ['cucumber', '🥒', 'food'], ['mushroom', '🍄', 'food'], ['peanut', '🥜', 'food'], ['honey', '🍯', 'food'], ['butter', '🧈', 'food'], ['tofu', '🍲', 'food'], ['oden', '🍢', 'food'], ['takoyaki', '🐙', 'food'], ['pudding', '🍮', 'food'], ['shaved ice', '🍧', 'food'],
+      ['walk', '🚶', 'exercise'], ['run', '🏃', 'exercise'], ['jog', '🏃', 'exercise'], ['gym', '🏋️', 'exercise'], ['weight', '🏋️', 'exercise'], ['lift', '🏋️', 'exercise'], ['yoga', '🧘', 'exercise'], ['cycle', '🚴', 'exercise'], ['bike', '🚴', 'exercise'], ['swim', '🏊', 'exercise'], ['hike', '🥾', 'exercise'], ['dance', '💃', 'exercise'], ['soccer', '⚽', 'exercise'], ['football', '🏈', 'exercise'], ['basketball', '🏀', 'exercise'], ['tennis', '🎾', 'exercise'], ['baseball', '⚾', 'exercise'], ['golf', '⛳', 'exercise'], ['ski', '⛷️', 'exercise'], ['snowboard', '🏂', 'exercise'], ['climb', '🧗', 'exercise'], ['stretch', '🤸', 'exercise'], ['boxing', '🥊', 'exercise'], ['badminton', '🏸', 'exercise'], ['volleyball', '🏐', 'exercise'], ['ping pong', '🏓', 'exercise'], ['table tennis', '🏓', 'exercise'], ['surf', '🏄', 'exercise'], ['skate', '⛸️', 'exercise'], ['pilates', '🧘', 'exercise'],
+      ['poop', '💩', 'health'], ['sleep', '😴', 'health'], ['nap', '😴', 'health'], ['medicine', '💊', 'health'], ['pill', '💊', 'health'], ['vitamin', '💊', 'health'], ['period', '🩸', 'health'], ['sick', '🤒', 'health'], ['fever', '🤒', 'health'], ['cold', '🤧', 'health'], ['doctor', '🩺', 'health'], ['hospital', '🏥', 'health'], ['dentist', '🦷', 'health'], ['tooth', '🦷', 'health'], ['shower', '🚿', 'health'], ['bath', '🛁', 'health'], ['injection', '💉', 'health'], ['vaccine', '💉', 'health'], ['mask', '😷', 'health'], ['headache', '🤕', 'health'], ['scale', '⚖️', 'health'], ['skincare', '🧴', 'health'],
+      ['study', '📚', 'other'], ['work', '💼', 'other'], ['book', '📖', 'other'], ['read', '📖', 'other'], ['game', '🎮', 'other'], ['music', '🎵', 'other'], ['movie', '🎬', 'other'], ['tv', '📺', 'other'], ['shopping', '🛍️', 'other'], ['clean', '🧹', 'other'], ['laundry', '🧺', 'other'], ['cook', '🍳', 'other'], ['travel', '✈️', 'other'], ['car', '🚗', 'other'], ['train', '🚃', 'other'], ['bus', '🚌', 'other'], ['plane', '✈️', 'other'], ['date', '💘', 'other'], ['party', '🎉', 'other'], ['birthday', '🎂', 'other'], ['gift', '🎁', 'other'], ['money', '💰', 'other'], ['dog', '🐶', 'other'], ['cat', '🐱', 'other'], ['pet', '🐾', 'other'], ['rain', '🌧️', 'other'], ['sun', '☀️', 'other'], ['happy', '😊', 'other'], ['sad', '😢', 'other'], ['angry', '😠', 'other'], ['tired', '🥱', 'other'], ['love', '❤️', 'other'], ['star', '⭐', 'other'], ['phone', '📱', 'other'], ['computer', '💻', 'other'], ['meeting', '🗓️', 'other'], ['meditation', '🧘', 'other'], ['walk dog', '🐕', 'other'], ['garden', '🪴', 'other'], ['photo', '📷', 'other'], ['guitar', '🎸', 'other'], ['piano', '🎹', 'other'], ['draw', '🎨', 'other'], ['write', '✍️', 'other'], ['journal', '📔', 'other']
+    ];
+  }
+  localEmojiSearch(text) {
+    const t = text.toLowerCase().trim();
+    if (!t) return null;
+    let best = null;
+    for (const row of this.emojiIndex()) {
+      const k = row[0];
+      if (k === t) return { emoji: row[1], cat: row[2] };
+      if (!best && (k.indexOf(t) === 0 || t.indexOf(k) === 0 || t.indexOf(k) > 0 || k.indexOf(t) > 0)) best = { emoji: row[1], cat: row[2] };
+    }
+    return best;
+  }
+
+  imgEl(src, style) { return src ? React.createElement('img', { src: src, alt: '', style: style }) : null; }
+
+  hasClaude() { return !!(window.claude && typeof window.claude.complete === 'function'); }
+  apiKeys() {
+    const defs = { emoji: '', usda: 'DEMO_KEY', calorie: '' };
+    try { return Object.assign(defs, JSON.parse(localStorage.getItem('sll-api-keys') || '{}')); }
+    catch (e) { return defs; }
+  }
+  setApiKey(k, v) {
+    const keys = this.apiKeys(); keys[k] = v;
+    try { localStorage.setItem('sll-api-keys', JSON.stringify(keys)); } catch (e) { }
+    this.forceUpdate();
+  }
+
+  beginLongPress(stickerId, e) {
+    if (e.pointerType !== 'touch') return;
+    const startX = e.clientX, startY = e.clientY;
+    let done = false;
+    const clean = () => { done = true; clearTimeout(t); window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); };
+    const mv = (ev) => { if (Math.abs(ev.clientX - startX) > 10 || Math.abs(ev.clientY - startY) > 10) clean(); };
+    const up = () => clean();
+    const t = setTimeout(() => { if (done) return; clean(); this.startTouchDrag(stickerId, startX, startY); }, 350);
+    window.addEventListener('pointermove', mv);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+  }
+  startTouchDrag(stickerId, x, y) {
+    this._suppressClick = true;
+    setTimeout(() => { this._suppressClick = false; }, 800);
+    if (!this.state.muted) this.tone(300, 620, 0.09, 'sine', 0.12);
+    if (navigator.vibrate) { try { navigator.vibrate(30); } catch (e) { } }
+    this.setState({ touchDrag: { id: stickerId, x, y } });
+    this._tdPrevent = (ev) => ev.preventDefault();
+    this._tdMove = (ev) => {
+      const el = document.elementFromPoint(ev.clientX, ev.clientY);
+      const cell = el && el.closest ? el.closest('[data-date]') : null;
+      this.setState({ touchDrag: { id: stickerId, x: ev.clientX, y: ev.clientY }, hoverDate: cell ? cell.getAttribute('data-date') : null });
+    };
+    this._tdUp = (ev) => this.endTouchDrag(ev, stickerId);
+    document.addEventListener('touchmove', this._tdPrevent, { passive: false });
+    window.addEventListener('pointermove', this._tdMove);
+    window.addEventListener('pointerup', this._tdUp);
+    window.addEventListener('pointercancel', this._tdUp);
+  }
+  endTouchDrag(ev, stickerId) {
+    document.removeEventListener('touchmove', this._tdPrevent);
+    window.removeEventListener('pointermove', this._tdMove);
+    window.removeEventListener('pointerup', this._tdUp);
+    window.removeEventListener('pointercancel', this._tdUp);
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    const cell = el && el.closest ? el.closest('[data-date]') : null;
+    this.setState({ touchDrag: null, hoverDate: null });
+    if (cell) this.addEntry(cell.getAttribute('data-date'), stickerId, ev.clientX, ev.clientY);
+  }
+
+  doBackup() {
+    const s = this.state;
+    const data = { app: 'my-daily-log', version: 1, exportedAt: new Date().toISOString(), entries: s.entries, custom: s.custom, overrides: s.overrides, hiddenDefaults: s.hiddenDefaults, dayNotes: s.dayNotes, avatar: s.avatar };
+    try {
+      const blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'my-daily-log-backup.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      const today = this.fmt(new Date());
+      try { localStorage.setItem('sll-last-backup', today); } catch (_) { }
+      this.setState({ restoreMsg: 'Backup downloaded ✓', lastBackup: today });
+    } catch (e) { this.setState({ restoreMsg: 'Backup failed — try again.' }); }
+  }
+  onRestoreFile(e) {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const d = JSON.parse(r.result);
+        if (!d || !Array.isArray(d.entries)) throw new Error('bad');
+        const n = d.entries.length;
+        if (!window.confirm('Replace current data with this backup (' + n + ' entries)? This cannot be undone.')) return;
+        this.setState({
+          entries: d.entries, custom: d.custom || [], overrides: d.overrides || {},
+          hiddenDefaults: d.hiddenDefaults || [], dayNotes: d.dayNotes || {}, avatar: d.avatar || null,
+          restoreMsg: 'Restored ' + n + ' entries ✓'
+        }, () => this.persist());
+      } catch (err) { this.setState({ restoreMsg: 'Could not read that file — is it a My Daily Log backup?' }); }
+    };
+    r.readAsText(f);
+  }
+
+  firstGrapheme(str) {
+    str = (str || '').trim();
+    if (!str) return '';
+    try {
+      const seg = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
+      const it = seg.segment(str)[Symbol.iterator]().next();
+      return it.done ? '' : it.value.segment;
+    } catch (e) {
+      return Array.from(str).slice(0, 2).join('');
+    }
+  }
+
+  onFile(e) {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const S = 96, c = document.createElement('canvas');
+        c.width = S; c.height = S;
+        const ctx = c.getContext('2d');
+        const m = Math.min(img.width, img.height);
+        ctx.drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, S, S);
+        this.setState({ cImg: c.toDataURL('image/png'), cEmoji: '' });
+      };
+      img.src = r.result;
+    };
+    r.readAsDataURL(f);
+  }
+
+  async generateSticker() {
+    const text = this.state.cName.trim();
+    if (!text || this.state.genLoading) return;
+    this.setState({ genLoading: true, genError: '' });
+    if (!this.hasClaude()) {
+      const mapCat = (g) => /drink/.test(g) ? 'drinks' : /food/.test(g) ? 'food' : /sport|activit/.test(g) ? 'exercise' : /medical|body|health|unwell/.test(g) ? 'health' : 'other';
+      const local = this.localEmojiSearch(text);
+      if (local) {
+        this.setState({ genLoading: false, cEmoji: local.emoji, cCat: local.cat, cImg: null });
+        return;
+      }
+      try {
+        const res = await fetch('https://www.emoji.family/api/emojis?search=' + encodeURIComponent(text));
+        const arr = await res.json();
+        if (Array.isArray(arr) && arr.length) {
+          const hit = arr[0];
+          const g = ((hit.group || '') + ' ' + (hit.subgroup || '') + ' ' + (hit.tags || []).join(' ')).toLowerCase();
+          this.setState({ genLoading: false, cEmoji: this.firstGrapheme(hit.emoji), cCat: mapCat(g), cImg: null });
+          return;
+        }
+      } catch (e) { }
+      try {
+        const key = this.apiKeys().emoji;
+        if (!key) throw new Error('no key');
+        const res = await fetch('https://emoji-api.com/emojis?search=' + encodeURIComponent(text) + '&access_key=' + encodeURIComponent(key));
+        const arr = await res.json();
+        if (!Array.isArray(arr) || !arr.length) throw new Error('no match');
+        const hit = arr[0];
+        const g = ((hit.group || '') + ' ' + (hit.subGroup || '')).toLowerCase();
+        this.setState({ genLoading: false, cEmoji: this.firstGrapheme(hit.character), cCat: mapCat(g), cImg: null });
+      } catch (e) {
+        this.setState({ genLoading: false, genError: 'No emoji match found — try a simpler English word (e.g. "noodles"), or pick one manually.' });
+      }
+      return;
+    }
+    try {
+      const raw = await window.claude.complete({
+        system: 'You turn a short description of a daily-life activity, food, drink, or habit into a sticker for a life-log app. Reply with ONLY a JSON object, no markdown: {"emoji":"<single best-matching emoji>","name":"<short clean sticker name, max 20 chars, Title Case>","category":"<one of: food, drinks, exercise, health, other>"}',
+        messages: [{ role: 'user', content: text }]
+      });
+      const m = raw.match(/\{[\s\S]*\}/);
+      const j = JSON.parse(m ? m[0] : raw);
+      const cat = ['food', 'drinks', 'exercise', 'health', 'other'].includes(j.category) ? j.category : 'other';
+      this.setState({
+        genLoading: false,
+        cEmoji: this.firstGrapheme(j.emoji) || this.state.cEmoji,
+        cName: (j.name || text).slice(0, 24),
+        cCat: cat,
+        cImg: null
+      });
+    } catch (e) {
+      this.setState({ genLoading: false, genError: 'Could not generate — try again or pick an emoji manually.' });
+    }
+  }
+
+  foodEntries(date) {
+    return this.entriesFor(date).filter(e => {
+      const c = this.getSticker(e.stickerId).cat;
+      return c === 'food' || c === 'drinks';
+    });
+  }
+  nutriSig(date) {
+    return date + '|' + this.foodEntries(date).map(e => e.stickerId + ':' + (e.qty || 1) + ':' + (e.note || '')).join(',');
+  }
+  async calcNutrition(date, force) {
+    if (this.state.nutriLoading) return;
+    const items = this.foodEntries(date);
+    if (!items.length) return;
+    const sig = this.nutriSig(date);
+    if (!force && sig === this.state.nutriKey && this.state.nutriData) return;
+    this.setState({ nutriLoading: true, nutriError: '' });
+    if (!this.hasClaude()) {
+      try {
+        const keys = this.apiKeys();
+        const tot = { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 };
+        let providers = {};
+        const viaCalorieApi = async (name) => {
+          if (!keys.calorie) return null;
+          const bases = ['https://calorieapiadmin.com/api/v1', 'https://api.calorieapi.com/api/v1'];
+          for (const base of bases) {
+            try {
+              const r = await fetch(base + '/search/foods?q=' + encodeURIComponent(name) + '&limit=1', { headers: { 'X-API-Key': keys.calorie } });
+              if (!r.ok) continue;
+              const j = await r.json();
+              const f = j.foods && j.foods[0];
+              if (!f) return null;
+              providers.calorie = true;
+              return { c: f.calories || 0, p: f.protein || 0, cb: f.carbs || 0, ft: f.fat || 0 };
+            } catch (_) { }
+          }
+          return null;
+        };
+        const viaUsda = async (name) => {
+          const r = await fetch('https://api.nal.usda.gov/fdc/v1/foods/search?api_key=' + encodeURIComponent(keys.usda || 'DEMO_KEY') + '&pageSize=1&query=' + encodeURIComponent(name));
+          const j = await r.json();
+          const f = j.foods && j.foods[0];
+          if (!f) return null;
+          const out = { c: 0, p: 0, cb: 0, ft: 0 };
+          (f.foodNutrients || []).forEach(n => {
+            const nm = (n.nutrientName || '').toLowerCase();
+            if (nm === 'energy' && (n.unitName || '').toLowerCase() === 'kcal') out.c += n.value || 0;
+            else if (nm === 'protein') out.p += n.value || 0;
+            else if (nm.indexOf('carbohydrate') === 0) out.cb += n.value || 0;
+            else if (nm.indexOf('total lipid') === 0) out.ft += n.value || 0;
+          });
+          providers.usda = true;
+          return out;
+        };
+        await Promise.all(items.slice(0, 8).map(async (e) => {
+          const st = this.getSticker(e.stickerId);
+          let m = null;
+          try { m = await viaCalorieApi(st.name); } catch (_) { }
+          if (!m) { try { m = await viaUsda(st.name); } catch (_) { } }
+          if (!m) return;
+          const q = e.qty || 1;
+          tot.calories += m.c * q; tot.protein_g += m.p * q; tot.carbs_g += m.cb * q; tot.fat_g += m.ft * q;
+        }));
+        const src = providers.calorie ? 'Calorie API' + (providers.usda ? ' + USDA' : '') : providers.usda ? 'USDA FoodData Central' : '';
+        if (!src) throw new Error('no data');
+        this.setState({
+          nutriLoading: false, nutriKey: sig,
+          nutriData: {
+            calories: Math.round(tot.calories), protein_g: Math.round(tot.protein_g),
+            carbs_g: Math.round(tot.carbs_g), fat_g: Math.round(tot.fat_g),
+            summary: 'Rough estimate via ' + src + ', per 100 g serving of each item.'
+          }
+        });
+      } catch (e) {
+        this.setState({ nutriLoading: false, nutriError: 'Could not reach the nutrition services — try again.' });
+      }
+      return;
+    }
+    const lines = items.map(e => {
+      const s = this.getSticker(e.stickerId);
+      return '- ' + s.name + ' x' + (e.qty || 1) + (e.note ? ' (' + e.note + ')' : '');
+    }).join('\n');
+    try {
+      const raw = await window.claude.complete({
+        system: 'You estimate the total nutrition of a day of food and drinks logged as simple sticker names. Assume typical single servings unless quantity or note says otherwise. Reply with ONLY a JSON object, no markdown: {"calories":<int kcal>,"protein_g":<int>,"carbs_g":<int>,"fat_g":<int>,"summary":"<one friendly sentence about the day, max 120 chars>"}',
+        messages: [{ role: 'user', content: lines }]
+      });
+      const m = raw.match(/\{[\s\S]*\}/);
+      const j = JSON.parse(m ? m[0] : raw);
+      this.setState({ nutriLoading: false, nutriKey: sig, nutriData: j });
+    } catch (e) {
+      this.setState({ nutriLoading: false, nutriError: 'Could not estimate — try again.' });
+    }
+  }
+  openDay(ds) {
+    const lastCalView = this.state.view === 'day' ? (this.state.lastCalView || 'month') : this.state.view;
+    this.setState({ view: 'day', cursor: ds, selectedDate: ds, lastCalView }, () => this.calcNutrition(ds));
+  }
+
+  buildDayLanes() {
+    const list = this.entriesFor(this.state.cursor);
+    const lanes = [];
+    this.slotDefs().forEach(sl => {
+      const es = list.filter(e => e.slot === sl.id);
+      if (es.length) lanes.push({ label: sl.label, emoji: sl.emoji, entries: es.map(e => this.entryChip(e)) });
+    });
+    const slotIds = this.slotDefs().map(sl => sl.id);
+    const rest = list.filter(e => !e.slot || !slotIds.includes(e.slot));
+    if (rest.length) lanes.push({ label: 'All day', emoji: '📌', entries: rest.map(e => this.entryChip(e)) });
+    return lanes;
+  }
+
+  updDayNote(ds, text) {
+    const dayNotes = Object.assign({}, this.state.dayNotes);
+    if (text) dayNotes[ds] = text; else delete dayNotes[ds];
+    this.setState({ dayNotes }, () => this.persist());
+  }
+
+  buildPeek() {
+    const ds = this.state.peekDate;
+    if (!ds) return null;
+    const list = this.entriesFor(ds).map(e => this.entryChip(e));
+    return {
+      title: this.shortLabel(ds),
+      countLabel: list.length === 1 ? '1 sticker' : list.length + ' stickers',
+      empty: list.length === 0,
+      entries: list,
+      note: this.state.dayNotes[ds] || '',
+      onNote: (e) => this.updDayNote(ds, e.target.value),
+      onOpenDay: () => { this.setState({ peekDate: null }); this.openDay(ds); }
+    };
+  }
+
+  buildDetail() {
+    const e = this.state.entries.find(x => x.id === this.state.detailId);
+    if (!e) return null;
+    const st = this.getSticker(e.stickerId);
+    const hasSlot = st.cat === 'food' || st.cat === 'drinks';
+    return {
+      hasSlot,
+      slots: hasSlot ? this.slotDefs().map(sl => ({
+        label: sl.emoji + ' ' + sl.label,
+        bg: e.slot === sl.id ? this.accent() : 'rgba(255,255,255,.55)',
+        color: e.slot === sl.id ? '#FFFFFF' : '#7A6E56',
+        onClick: () => this.updEntry(e.id, { slot: sl.id })
+      })) : [],
+      name: st.name, emoji: st.emoji || '', img: st.img || '', noImg: !st.img && !!st.emoji, tag: !st.img && !st.emoji,
+      imgNode: this.imgEl(st.img, { width: 38, height: 38, borderRadius: 9, objectFit: 'cover' }),
+      bg: this.catBg(st.cat), catLabel: this.catLabel(st.cat),
+      dateLabel: this.shortLabel(e.date),
+      qty: e.qty || 1, note: e.note || '',
+      onMinus: () => { const q = (e.qty || 1); if (q <= 1) this.delEntry(e.id); else this.updEntry(e.id, { qty: q - 1 }); },
+      onPlus: () => this.updEntry(e.id, { qty: (e.qty || 1) + 1 }),
+      onNote: (ev) => this.updEntry(e.id, { note: ev.target.value }),
+      onDelete: () => this.delEntry(e.id)
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const accent = this.accent();
+    const today = this.fmt(new Date());
+    const views = [['month', 'Month'], ['week', 'Week'], ['day', 'Day']];
+    const dayEntries = this.entriesFor(s.selectedDate).map(e => this.entryChip(e));
+    const dayH = this.makeDropHandlers(s.view === 'day' ? s.cursor : s.selectedDate);
+    const catRow = (activeId, onPick) => this.catDefs().map(c => ({
+      label: c.label, emoji: c.emoji,
+      bg: c.id === activeId ? c.bg : 'rgba(255,255,255,.55)',
+      color: c.id === activeId ? c.color : '#7A6E56',
+      onClick: () => onPick(c.id)
+    }));
+    const exCount = this.exportRows().length;
+
+    return {
+      accent,
+      isMobile: s.isMobile, isDesktop: !s.isMobile,
+      mainPadBottom: s.isMobile ? '196px' : '18px',
+      headerLabel: this.buildHeaderLabel(),
+      viewTabs: views.map(v => ({
+        label: v[1],
+        bg: s.view === v[0] ? accent : 'transparent',
+        color: s.view === v[0] ? '#FFFFFF' : '#675E52',
+        onClick: () => {
+          if (v[0] === 'day') { this.openDay(s.selectedDate); return; }
+          this.setState({ view: v[0] });
+        }
+      })),
+      onPrev: () => this.nav(-1),
+      onNext: () => this.nav(1),
+      onToday: () => this.setState({ cursor: today, selectedDate: today }),
+
+      isMonth: s.view === 'month', isWeek: s.view === 'week', isDay: s.view === 'day',
+      weekdayNames: this.wdNames(),
+      monthCells: s.view === 'month' ? this.buildMonthCells() : [],
+      weekCols: s.view === 'week' ? this.buildWeekCols() : [],
+
+      dayTitle: this.buildHeaderLabel(),
+      dayCountLabel: dayEntries.length === 1 ? '1 sticker' : dayEntries.length + ' stickers',
+      dayEmpty: s.view === 'day' && dayEntries.length === 0,
+      dayLanes: s.view === 'day' ? this.buildDayLanes() : [],
+      dayBorder: s.hoverDate === s.cursor && s.view === 'day' ? accent : '#EADFCB',
+      dayDragOver: dayH.onDragOver, dayDragLeave: dayH.onDragLeave, dayDrop: dayH.onDrop,
+
+      onBackToCal: () => this.setState({ view: s.lastCalView || 'month' }),
+      backLabel: (s.lastCalView || 'month') === 'week' ? 'Week' : 'Month',
+
+      dayDs: s.cursor,
+      touchDrag: s.touchDrag,
+      tdX: s.touchDrag ? s.touchDrag.x : 0,
+      tdY: s.touchDrag ? s.touchDrag.y : 0,
+      tdEmoji: s.touchDrag ? (this.getSticker(s.touchDrag.id).emoji || (this.getSticker(s.touchDrag.id).img ? '' : '🏷')) : '',
+      tdImg: s.touchDrag ? (this.getSticker(s.touchDrag.id).img || '') : '',
+      tdImgNode: s.touchDrag ? this.imgEl(this.getSticker(s.touchDrag.id).img, { width: 46, height: 46, borderRadius: 12, objectFit: 'cover', boxShadow: '0 10px 24px rgba(60,50,40,.35)' }) : null,
+
+      backupNudge: s.entries.length >= 10
+        && this.daysSince(s.lastBackup || s.firstUse) >= 14
+        && this.daysSince(s.nudgeSnooze) >= 7,
+      backupNudgeText: s.lastBackup
+        ? 'It\u2019s been a while since your last backup \u2014 your log lives only in this browser.'
+        : 'Your log lives only in this browser \u2014 download a backup so you never lose it.',
+      onNudgeBackup: () => this.setState({ exportOpen: true, exCsv: '', exDownloaded: false, exCopied: false }),
+      onNudgeLater: () => {
+        const today = this.fmt(new Date());
+        try { localStorage.setItem('sll-nudge-snooze', today); } catch (e) { }
+        this.setState({ nudgeSnooze: today });
+      },
+
+      showApiKeys: !this.hasClaude(),
+      emojiKey: this.apiKeys().emoji,
+      usdaKey: this.apiKeys().usda,
+      onEmojiKey: (e) => this.setApiKey('emoji', e.target.value.trim()),
+      onUsdaKey: (e) => this.setApiKey('usda', e.target.value.trim()),
+      calorieKey: this.apiKeys().calorie,
+      onCalorieKey: (e) => this.setApiKey('calorie', e.target.value.trim()),
+
+      onBackup: () => this.doBackup(),
+      onRestoreFile: (e) => this.onRestoreFile(e),
+      restoreMsg: s.restoreMsg,
+
+      dayNote: s.dayNotes[s.cursor] || '',
+      onDayNote: (e) => this.updDayNote(s.cursor, e.target.value),
+
+      dayHasFood: s.view === 'day' && this.foodEntries(s.cursor).length > 0,
+      nutriLoading: s.nutriLoading,
+      nutriError: s.nutriError,
+      nutri: s.view === 'day' && !s.nutriLoading && s.nutriData && s.nutriKey === this.nutriSig(s.cursor) ? s.nutriData : null,
+      nutriStats: s.nutriData ? [
+        { label: 'Calories', value: (s.nutriData.calories || 0) + ' kcal' },
+        { label: 'Protein', value: (s.nutriData.protein_g || 0) + ' g' },
+        { label: 'Carbs', value: (s.nutriData.carbs_g || 0) + ' g' },
+        { label: 'Fat', value: (s.nutriData.fat_g || 0) + ' g' }
+      ] : [],
+      nutriSummary: s.nutriData ? (s.nutriData.summary || '') : '',
+      nutriBtnLabel: s.nutriLoading ? '… calculating' : (s.nutriData && s.nutriKey === this.nutriSig(s.cursor) ? '↻ Recalculate' : '✨ Calculate'),
+      nutriBtnBg: s.nutriLoading ? '#D9CBB4' : accent,
+      onCalcNutrition: () => this.calcNutrition(s.cursor, true),
+
+      cats: catRow(s.activeCat, (id) => this.setState({ activeCat: id })),
+      palette: this.allStickers().filter(x => x.cat === s.activeCat && !s.hiddenDefaults.includes(x.id)).map(x => ({
+        name: x.name, emoji: x.emoji || '', img: x.img || '', noImg: !x.img && !!x.emoji, tag: !x.img && !x.emoji,
+        imgNode: this.imgEl(x.img, { width: 30, height: 30, borderRadius: 8, objectFit: 'cover', pointerEvents: 'none' }),
+        imgNodeSm: this.imgEl(x.img, { width: 28, height: 28, borderRadius: 8, objectFit: 'cover' }),
+        isCustom: !!x.isCustom, bg: this.catBg(x.cat),
+        onDragStart: (e) => {
+          this._dragId = x.id;
+          try { e.dataTransfer.setData('text/plain', x.id); e.dataTransfer.effectAllowed = 'copy'; } catch (_) { }
+        },
+        onClick: (e) => { if (this._suppressClick) { this._suppressClick = false; return; } this.addEntry(s.selectedDate || today, x.id, e.clientX, e.clientY); },
+        onPointerDown: (e) => this.beginLongPress(x.id, e),
+        onEdit: (e) => { e.stopPropagation(); this.openCreator(x.id); }
+      })),
+      selectedShort: this.shortLabel(s.selectedDate),
+      openSelectedDay: () => this.openDay(s.selectedDate),
+
+      detail: this.buildDetail(),
+      closeDetail: () => this.setState({ detailId: null }),
+      eatClick: (e) => e.stopPropagation(),
+
+      avatar: s.avatar || '',
+      avatarNode: this.imgEl(s.avatar, { width: 46, height: 46, borderRadius: '50%', objectFit: 'cover' }),
+      noAvatar: !s.avatar,
+      onAvatarClick: () => { const el = document.getElementById('sll-avatar-input'); if (el) el.click(); },
+      onAvatarFile: (e) => this.onAvatarFile(e),
+      cheerLine: s.cheer || 'make today sticker-worthy ☀️',
+
+      peek: this.buildPeek(),
+      closePeek: () => this.setState({ peekDate: null }),
+      muteIcon: s.muted ? '🔇' : '🔊',
+      toggleMute: () => {
+        const muted = !s.muted;
+        this.setState({ muted });
+        try { localStorage.setItem('sll-muted', muted ? '1' : '0'); } catch (e) { }
+        if (!muted) this.playPop();
+      },
+
+      creatorOpen: s.creatorOpen,
+      creatorEditId: s.creatorEditId,
+      creatorTitle: s.creatorEditId ? 'Edit sticker' : 'Create a sticker',
+      creatorSaveLabel: s.creatorEditId ? 'Save changes' : 'Add sticker',
+      creatorDeleteLabel: s.creatorEditId && !this.isCustomId(s.creatorEditId) ? 'Hide' : 'Delete',
+      creatorPrevImg: s.cImg || '',
+      creatorPrevImgNode: this.imgEl(s.cImg, { width: 44, height: 44, borderRadius: 10, objectFit: 'cover' }),
+      creatorPrevEmoji: s.cImg ? '' : (s.cEmoji.trim() || (s.cName.trim() ? '' : '🙂')),
+      creatorPrevTag: !s.cImg && !s.cEmoji.trim() && s.cName.trim() ? s.cName.trim() : '',
+      cName: s.cName, cEmoji: s.cEmoji, cImg: s.cImg,
+      onCName: (e) => this.setState({ cName: e.target.value, genError: '' }),
+      onCNameKey: (e) => { if (e.key === 'Enter') this.generateSticker(); },
+      onGenerate: () => this.generateSticker(),
+      genDisabled: s.genLoading || !s.cName.trim(),
+      genBg: s.genLoading || !s.cName.trim() ? '#D9CBB4' : accent,
+      genLabel: s.genLoading ? '… thinking' : '✨ Generate',
+      genError: s.genError,
+      onCEmoji: (e) => { const v = this.firstGrapheme(e.target.value); this.setState({ cEmoji: v, cImg: v ? null : s.cImg }); },
+      onCFile: (e) => this.onFile(e),
+      onClearImg: () => this.setState({ cImg: null }),
+      creatorCats: catRow(s.cCat, (id) => this.setState({ cCat: id })),
+      openCreatorNew: () => this.openCreator(null),
+      closeCreator: () => this.setState({ creatorOpen: false }),
+      onSaveCreator: () => this.saveCreator(),
+      onDeleteCustom: () => this.deleteCustom(),
+
+      exportOpen: s.exportOpen,
+      openExport: () => this.setState({ exportOpen: true, exCsv: '', exDownloaded: false, exCopied: false, exFrom: s.exFrom || today.slice(0, 8) + '01', exTo: s.exTo || today }),
+      exCsv: s.exCsv,
+      exDownloaded: s.exDownloaded,
+      exCopyLabel: s.exCopied ? '✓ Copied' : '⧉ Copy to clipboard',
+      exDownloadNote: s.exDownloaded ? 'Download started — if it didn\u2019t appear, copy the data below:' : 'Your browser blocked the download — copy the data below instead:',
+      onCopyCsv: () => this.copyCsv(),
+      closeExport: () => this.setState({ exportOpen: false }),
+      exIsRange: s.exMode === 'range',
+      exAllBg: s.exMode === 'all' ? accent : 'rgba(255,255,255,.55)',
+      exAllColor: s.exMode === 'all' ? '#FFFFFF' : '#7A6E56',
+      exRangeBg: s.exMode === 'range' ? accent : 'rgba(255,255,255,.55)',
+      exRangeColor: s.exMode === 'range' ? '#FFFFFF' : '#7A6E56',
+      onExAll: () => this.setState({ exMode: 'all' }),
+      onExRange: () => this.setState({ exMode: 'range' }),
+      exFrom: s.exFrom, exTo: s.exTo,
+      onExFrom: (e) => this.setState({ exFrom: e.target.value }),
+      onExTo: (e) => this.setState({ exTo: e.target.value }),
+      exportCountLabel: exCount === 1 ? '1 entry will be exported' : exCount + ' entries will be exported',
+      onDoExport: () => this.doExport()
+    };
+  }
+}
+</script>
+</body>
+</html>
